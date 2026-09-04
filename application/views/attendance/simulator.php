@@ -20,13 +20,12 @@
         <form method="GET" action="<?= base_url('attendance/simulator') ?>" class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center space-x-3">
                 <label class="text-xs font-semibold text-slate-300">Pilih Meeting Target:</label>
-                <select name="meeting_id" onchange="this.form.submit()" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 focus:outline-none">
-                    <?php foreach ($meetings as $m): ?>
-                        <option value="<?= $m['id'] ?>" <?= ($meeting && $meeting['id'] == $m['id']) ? 'selected' : '' ?>>
-                            [<?= htmlspecialchars($m['rig_code']) ?>] <?= htmlspecialchars($m['title']) ?> (<?= date('d M Y', strtotime($m['meeting_date'])) ?>)
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <?php $this->load->view('components/meeting_switcher', array(
+                    'meetings'        => $meetings,
+                    'current_meeting' => $meeting,
+                    'target_route'    => 'attendance/simulator?meeting_id=',
+                    'mode'            => 'query_param'
+                )); ?>
             </div>
         </form>
     </div>

@@ -3,11 +3,15 @@
 <footer class="mt-auto py-4 px-6 border-t border-slate-800 bg-slate-900/50 text-center text-xs text-slate-500">
     <div class="flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto">
         <div>
-            &copy; <?= date('Y') ?> <strong class="text-slate-400">PT Besmindo Oilfield Operations</strong> &bull; Rig Crew Meeting Reminder & Attendance System
+            &copy; <?= date('Y') ?> <strong class="text-slate-300">PT. Besmindo Materi Sewatama</strong> &bull; Rig Crew Meeting Reminder & Attendance System
         </div>
         <div class="flex items-center space-x-4 text-[11px]">
-            <span class="text-slate-400"><i class="fa-solid fa-code-branch text-sky-400 mr-1"></i> CodeIgniter 3.1 &bull; PHP <?= phpversion() ?></span>
-            <a href="<?= base_url('install') ?>" class="text-sky-400 hover:underline">Auto-Installer</a>
+            <a href="https://besmindoms.com/id/" target="_blank" class="text-sky-400 hover:underline flex items-center space-x-1">
+                <i class="fa-solid fa-globe"></i>
+                <span>besmindoms.com</span>
+            </a>
+            <span class="text-slate-600">&bull;</span>
+            <span class="text-slate-400">CodeIgniter 3.1 &bull; PHP <?= phpversion() ?></span>
         </div>
     </div>
 </footer>

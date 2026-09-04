@@ -10,19 +10,30 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-            <select onchange="window.location.href='<?= base_url('attendance/live/') ?>/' + this.value" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none shadow-lg">
-                <?php foreach ($meetings as $m): ?>
-                    <option value="<?= $m['id'] ?>" <?= ($meeting['id'] == $m['id']) ? 'selected' : '' ?>>
-                        [<?= htmlspecialchars($m['rig_code']) ?>] <?= htmlspecialchars($m['title']) ?> (<?= date('d M', strtotime($m['meeting_date'])) ?> <?= substr($m['start_time'], 0, 5) ?> WIB)
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <!-- Modern & Professional Meeting Switcher -->
+            <?php $this->load->view('components/meeting_switcher', array(
+                'meetings'        => $meetings,
+                'current_meeting' => $meeting,
+                'target_route'    => 'attendance/live/'
+            )); ?>
 
-            <?php if ($stats['belum_hadir'] > 0 || $stats['tidak_hadir'] > 0): ?>
+            <a href="<?= base_url('attendance/rekap/' . $meeting['id']) ?>" class="inline-flex items-center space-x-2 px-3.5 py-2.5 rounded-xl bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border border-sky-500/30 font-bold text-xs transition">
+                <i class="fa-solid fa-file-signature text-sm"></i>
+                <span>Rekap Absensi</span>
+            </a>
+
+            <?php if ($meeting['status'] !== 'completed'): ?>
+                <button type="button" onclick="openCloseSessionModal()" class="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Selesai &amp; Tutup Sesi</span>
+                </button>
+            <?php endif; ?>
+
+            <?php if ($meeting['status'] !== 'completed' && ($stats['belum_hadir'] > 0 || $stats['tidak_hadir'] > 0)): ?>
                 <a href="<?= base_url('attendance/remind_not_present/' . $meeting['id']) ?>" 
                     class="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-lg shadow-amber-600/30 transition animate-pulse">
                     <i class="fa-brands fa-whatsapp text-sm"></i>
-                    <span>Ingatkan <?= $stats['belum_hadir'] + $stats['tidak_hadir'] ?> Crew Belum Hadir</span>
+                    <span>Ingatkan <?= $stats['belum_hadir'] + $stats['tidak_hadir'] ?> Crew</span>
                 </a>
             <?php endif; ?>
 
@@ -32,6 +43,31 @@
             </a>
         </div>
     </div>
+
+    <?php if ($meeting['status'] === 'completed'): ?>
+        <div class="bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-500/30 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                    <i class="fa-solid fa-lock text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h3 class="text-sm font-bold text-white">Sesi Rapat Telah Resmi Ditutup</h3>
+                        <span class="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">
+                            <?= !empty($meeting['closed_at']) ? date('d M Y, H:i', strtotime($meeting['closed_at'])) . ' WIB' : 'Completed' ?>
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Data kehadiran telah dikunci dan direkap. Anda dapat melihat notulensi atau mencetak laporan resmi.
+                    </p>
+                </div>
+            </div>
+            <a href="<?= base_url('attendance/rekap/' . $meeting['id']) ?>" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/30 transition flex items-center space-x-2 shrink-0">
+                <i class="fa-solid fa-file-signature"></i>
+                <span>Lihat Rekap Absensi &amp; Notulensi</span>
+            </a>
+        </div>
+    <?php endif; ?>
 
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
@@ -291,4 +327,74 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
+
+    function openCloseSessionModal() {
+        const modal = document.getElementById('closeSessionModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeCloseSessionModal() {
+        const modal = document.getElementById('closeSessionModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 </script>
+
+<!-- Modal: Tutup Sesi Rapat -->
+<div id="closeSessionModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                <i class="fa-solid fa-lock text-rose-400"></i>
+                <span>Selesaikan &amp; Tutup Sesi Rapat Ini</span>
+            </h3>
+            <button type="button" onclick="closeCloseSessionModal()" class="text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <form action="<?= base_url('attendance/close_session') ?>" method="POST" class="space-y-4">
+            <input type="hidden" name="meeting_id" value="<?= $meeting['id'] ?>">
+
+            <div class="bg-rose-950/40 border border-rose-500/30 rounded-xl p-3 text-xs text-rose-200">
+                <p class="font-bold flex items-center space-x-1.5 mb-1">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
+                    <span>Konfirmasi Penutupan Sesi:</span>
+                </p>
+                <ul class="list-disc list-inside space-y-0.5 text-[11px] text-rose-300/90">
+                    <li>Seluruh crew yang berstatus <strong>BELUM HADIR</strong> akan diubah otomatis menjadi <strong>TIDAK HADIR (Alpha)</strong>.</li>
+                    <li>Status rapat menjadi <strong>COMPLETED</strong> dan pengingat WA terjadwal dinonaktifkan.</li>
+                    <li>Sistem akan merekap statistik dan Anda dapat mencetak laporan resmi.</li>
+                </ul>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Notulensi / Kesimpulan Hasil Rapat:
+                </label>
+                <textarea name="meeting_notes" rows="4" placeholder="Catatan singkat hasil keputusan rapat (opsional)..." class="w-full px-3.5 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 focus:outline-none"><?= htmlspecialchars($meeting['meeting_notes'] ?? '') ?></textarea>
+            </div>
+
+            <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center space-x-3">
+                <input type="checkbox" id="broadcastRecapCheck" name="broadcast_recap_wa" value="1" <?= !empty($meeting['wa_group_id']) ? 'checked' : '' ?> class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-400 bg-slate-800 border-slate-700">
+                <label for="broadcastRecapCheck" class="text-xs text-slate-300 cursor-pointer">
+                    Kirim langsung rekapitulasi kehadiran ke WhatsApp Group Rig 
+                    <?php if (!empty($meeting['wa_group_id'])): ?>
+                        <span class="font-mono text-emerald-400 text-[11px] block"><?= htmlspecialchars($meeting['wa_group_id']) ?></span>
+                    <?php endif; ?>
+                </label>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800 flex items-center justify-end space-x-2">
+                <button type="button" onclick="closeCloseSessionModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-600/30 transition">
+                    Tutup &amp; Rekap Sekarang
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+

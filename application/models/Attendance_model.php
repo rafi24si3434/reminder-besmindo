@@ -114,6 +114,42 @@ class Attendance_model extends CI_Model
         return $this->db->get()->result_array();
     }
 
+    public function close_meeting_session($meeting_id, $meeting_notes = null)
+    {
+        // 1. Ubah yang masih BELUM_HADIR menjadi TIDAK_HADIR (Alpha)
+        $this->db->where('meeting_id', $meeting_id);
+        $this->db->where('status', 'BELUM_HADIR');
+        $this->db->update($this->table, array(
+            'status' => 'TIDAK_HADIR',
+            'notes'  => 'Tidak hadir hingga sesi rapat ditutup'
+        ));
+
+        // 2. Tandai status meeting menjadi completed dan simpan waktu tutup + notulensi
+        $this->db->where('id', $meeting_id);
+        return $this->db->update('meetings', array(
+            'status'        => 'completed',
+            'closed_at'     => date('Y-m-d H:i:s'),
+            'meeting_notes' => $meeting_notes
+        ));
+    }
+
+    public function reopen_meeting_session($meeting_id)
+    {
+        $this->db->where('id', $meeting_id);
+        return $this->db->update('meetings', array(
+            'status'    => 'in_progress',
+            'closed_at' => NULL
+        ));
+    }
+
+    public function update_meeting_notes($meeting_id, $meeting_notes)
+    {
+        $this->db->where('id', $meeting_id);
+        return $this->db->update('meetings', array(
+            'meeting_notes' => $meeting_notes
+        ));
+    }
+
     public function insert($data)
     {
         return $this->db->insert($this->table, $data);

@@ -31,17 +31,17 @@
 
     <div class="border-b-2 border-slate-900 pb-4 mb-6 flex items-center justify-between">
         <div class="flex items-center space-x-4">
-            <div class="w-14 h-14 bg-slate-900 text-white flex items-center justify-center font-black rounded-lg text-2xl">
-                B
+            <div class="p-2 bg-slate-900 rounded-lg">
+                <img src="<?= base_url('assets/images/logo_besmindo.png') ?>" alt="PT Besmindo Materi Sewatama" class="h-12 w-auto object-contain">
             </div>
             <div>
-                <h1 class="text-lg font-black tracking-wider text-slate-900">PT BESMINDO OILFIELD OPERATIONS</h1>
-                <p class="text-[11px] text-slate-600">Divisi Operasional Pengeboran & Rig Superintendent Center</p>
-                <p class="text-[10px] text-slate-500">Jl. Minyak No. 1, Duri - Minas Field, Riau | www.besmindo.co.id</p>
+                <h1 class="text-base font-black tracking-wider text-slate-900">PT. BESMINDO MATERI SEWATAMA</h1>
+                <p class="text-[10px] text-slate-600 font-medium">Oilfield Equipment Sales & Rental, Drilling & Work Over Rig Services</p>
+                <p class="text-[10px] text-slate-500">Light Vehicle & Logistics Yard Duri, Riau | https://besmindoms.com</p>
             </div>
         </div>
         <div class="text-right text-[11px] text-slate-600">
-            <p class="font-bold text-slate-900">REKAPITULASI KEHADIRAN MEETING</p>
+            <p class="font-bold text-slate-900">REKAPITULASI KEHADIRAN MEETING RIG</p>
             <p>Tanggal Cetak: <?= date('d F Y, H:i') ?> WIB</p>
             <p>Status: Dokumen Resmi Operasional</p>
         </div>

@@ -5,9 +5,9 @@
         <div>
             <div class="flex items-center space-x-2">
                 <i class="fa-solid fa-tower-broadcast text-2xl text-emerald-400"></i>
-                <h1 class="text-2xl font-black text-white tracking-tight">Pusat Layanan WhatsApp Gateway (Fonnte)</h1>
+                <h1 class="text-2xl font-black text-white tracking-tight">Pusat Layanan WhatsApp Gateway Mandiri</h1>
             </div>
-            <p class="text-xs text-slate-400 mt-1">Integrasi resmi Fonnte API untuk pengiriman broadcast & undangan meeting dengan proteksi anti-ban</p>
+            <p class="text-xs text-slate-400 mt-1">Koneksi WhatsApp Engine Mandiri (Node.js Baileys) untuk pengiriman broadcast & reminder resmi</p>
         </div>
 
         <!-- Quick Navigation Tab Bar -->
@@ -35,118 +35,169 @@
             </div>
             <div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-sm font-bold text-white">Fonnte WhatsApp Cloud Engine</span>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                        ANTI-BAN BATCH ENGINE
+                    <span class="text-sm font-bold text-white">WhatsApp Gateway Mandiri (Server Internal)</span>
+                    <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        ANTI-BAN QUEUE ACTIVE
                     </span>
                 </div>
                 <p class="text-xs text-slate-400 mt-1">
-                    Sistem menggunakan endpoint resmi <strong class="text-emerald-400 font-mono">https://api.fonnte.com/send</strong> dengan jeda otomatis (delay) per pesan agar nomor Anda tetap aman.
+                    Berjalan mandiri di server lokal (<strong class="text-emerald-400 font-mono">http://localhost:3000</strong>) dengan antrian pengiriman dan delay otomatis.
                 </p>
             </div>
         </div>
 
         <div class="flex items-center space-x-2 flex-shrink-0">
-            <a href="https://fonnte.com" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-arrow-up-right-from-square text-sky-400"></i>
-                <span>Buka Dashboard Fonnte</span>
-            </a>
             <a href="<?= base_url('reminder') ?>" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/30 transition flex items-center space-x-1.5">
                 <i class="fa-solid fa-paper-plane"></i>
-                <span>Ke Menu Broadcast</span>
+                <span>Mulai Broadcast</span>
             </a>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Left Column: Fonnte API Configuration -->
+        <!-- Left Column: QR Code & Live Connection Status -->
         <div class="lg:col-span-6 space-y-6">
 
-            <!-- Fonnte Token Setup -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
-                            <i class="fa-solid fa-key"></i>
+                            <i class="fa-solid fa-qrcode"></i>
                         </div>
                         <div>
-                            <h3 class="text-sm font-bold text-white">Konfigurasi Token Fonnte</h3>
-                            <p class="text-[10px] text-slate-400">Masukkan Token Akun Fonnte Anda</p>
+                            <h3 class="text-sm font-bold text-white">Otorisasi WhatsApp Pengirim</h3>
+                            <p class="text-[10px] text-slate-400">Scan QR Code dengan WhatsApp nomor pengirim</p>
                         </div>
                     </div>
-                    <div id="fonnteBadge">
+                    <div id="connectionBadge">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
                             <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping mr-1.5"></span> Memeriksa...
                         </span>
                     </div>
                 </div>
 
-                <form action="<?= base_url('reminder/save_gateway_settings') ?>" method="POST" class="space-y-4">
-                    <input type="hidden" name="wa_gateway_provider" value="FONNTE">
-                    <input type="hidden" name="wa_api_url" value="https://api.fonnte.com/send">
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-                            Fonnte API Token <span class="text-rose-400">*</span>
-                        </label>
-                        <div class="relative">
-                            <input type="password" id="inputFonnteToken" name="wa_api_token" value="<?= htmlspecialchars($apiToken) ?>" required placeholder="Contoh: a1b2c3d4e5f6g7h8..." 
-                                class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none pr-10">
-                            <button type="button" onclick="toggleTokenVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs">
-                                <i class="fa-regular fa-eye" id="iconEye"></i>
-                            </button>
-                        </div>
-                        <p class="text-[11px] text-slate-400 mt-1">
-                            Dapatkan Token di dashboard Fonnte Anda: <strong>Dashboard &gt; Device &gt; Token</strong>.
-                        </p>
+                <!-- QR Display & Connection States -->
+                <div class="flex flex-col items-center justify-center p-6 bg-slate-950 rounded-xl border border-slate-800 min-h-[300px]">
+                    
+                    <!-- Loading State -->
+                    <div id="qrLoading" class="text-center space-y-3">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl text-sky-400"></i>
+                        <p class="text-xs text-white font-semibold">Menghubungkan ke Service Gateway...</p>
+                        <p class="text-[11px] text-slate-400">Memeriksa status sambungan di port 3000</p>
                     </div>
 
+                    <!-- QR Code Ready -->
+                    <div id="qrContainer" class="hidden flex-col items-center space-y-4">
+                        <div class="bg-white p-3 rounded-2xl shadow-2xl inline-block">
+                            <img id="qrImage" src="" alt="WhatsApp QR Code" class="w-56 h-56">
+                        </div>
+                        <div class="text-xs text-slate-300 space-y-2 text-center">
+                            <p class="font-bold text-white text-sm">Scan dengan WhatsApp di HP Pengirim</p>
+                            <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-left max-w-xs mx-auto">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Cara Tautkan Perangkat:</p>
+                                <ol class="text-[11px] text-slate-300 list-decimal list-inside space-y-1">
+                                    <li>Buka <strong>WhatsApp</strong> di HP Anda</li>
+                                    <li>Ketuk menu <strong>⋮ (Titik Tiga) / Setelan</strong></li>
+                                    <li>Pilih <strong>Perangkat Tertaut (Linked Devices)</strong></li>
+                                    <li>Ketuk tombol <strong>Tautkan Perangkat</strong></li>
+                                    <li>Arahkan kamera ke QR Code di atas</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Connected State -->
+                    <div id="connectedContainer" class="hidden flex-col items-center space-y-4 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl border border-emerald-500/30 shadow-lg shadow-emerald-500/20">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="text-base font-bold text-white">WhatsApp Gateway Terhubung & Aktif!</h4>
+                            <p class="text-xs text-emerald-400 font-mono font-bold" id="connectedNumberLabel">Nomor Pengirim: <?= htmlspecialchars($senderNumber) ?></p>
+                            <p class="text-[11px] text-slate-400 max-w-xs mt-1">
+                                Sistem siap menyebarkan notifikasi dan undangan meeting secara otomatis ke nomor crew / grup rig.
+                            </p>
+                        </div>
+                        <div class="pt-2 flex items-center space-x-2">
+                            <a href="<?= base_url('reminder') ?>" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow transition">
+                                <i class="fa-solid fa-paper-plane mr-1.5"></i> Masuk Menu Broadcast
+                            </a>
+                            <button type="button" onclick="logoutWhatsApp()" class="px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold border border-rose-500/30 transition">
+                                <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i> Putuskan Sesi
+                            </button>
+                        </div>
+                    </div>
+
+                <!-- Anti-Ban Live Metrics -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                        <div class="flex items-center space-x-2 text-xs font-bold text-white">
+                            <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                            <span>Proteksi Anti-Ban (Bebas Skors 5 Jam)</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            100% AKTIF
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/60">
+                            <span class="text-slate-400 block text-[10px]">Jeda Antar Pesan Pribadi</span>
+                            <span class="text-emerald-400 font-bold font-mono text-xs" id="metricDelay">15 – 35 Detik</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/60">
+                            <span class="text-slate-400 block text-[10px]">Simulasi Ketik Manusia</span>
+                            <span class="text-sky-400 font-bold font-mono text-xs">3 – 6.5 Detik</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/60">
+                            <span class="text-slate-400 block text-[10px]">Pesan Personal Jam Ini</span>
+                            <span class="text-amber-400 font-bold font-mono text-xs" id="metricHourly">0 / 25 Pesan</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/60">
+                            <span class="text-slate-400 block text-[10px]">Antrian Berjalan Saat Ini</span>
+                            <span class="text-white font-bold font-mono text-xs" id="metricQueue">0 Pesan</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 italic">
+                        <i class="fa-solid fa-circle-info mr-1"></i> Setiap pesan menyertakan nama dan jabatan personil secara otomatis agar tidak dianggap spam oleh WhatsApp.
+                    </p>
+                </div>
+
+                <!-- Settings Form -->
+                <form action="<?= base_url('reminder/save_gateway_settings') ?>" method="POST" class="space-y-4 pt-2">
                     <div>
                         <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-                            Nomor Pengirim (Sender Number)
+                            Nomor WhatsApp Pengirim
                         </label>
-                        <input type="text" name="wa_sender_number" value="<?= htmlspecialchars($senderNumber) ?>" placeholder="Contoh: 085148410891" 
+                        <input type="text" name="wa_sender_number" value="<?= htmlspecialchars($senderNumber) ?>" placeholder="Contoh: 081234567890" 
                             class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
 
-                    <div class="pt-2 flex items-center space-x-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                            Endpoint Service Gateway Mandiri
+                        </label>
+                        <input type="text" name="wa_api_url" value="<?= htmlspecialchars($apiUrl) ?>" placeholder="http://localhost:3000/send-message" 
+                            class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <div class="pt-1 flex items-center space-x-3">
                         <button type="submit" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-floppy-disk"></i>
-                            <span>Simpan Token Fonnte</span>
+                            <span>Simpan Pengaturan</span>
                         </button>
-                        <button type="button" onclick="checkFonnteLiveStatus()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center space-x-1.5">
+                        <button type="button" onclick="checkGatewayStatus()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center space-x-1.5">
                             <i class="fa-solid fa-rotate"></i>
-                            <span>Cek Status</span>
+                            <span>Refresh Status</span>
                         </button>
                     </div>
                 </form>
-
-                <!-- Status Card -->
-                <div id="fonnteStatusCard" class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-400">Status Perangkat Fonnte:</span>
-                        <span id="labelDeviceStatus" class="font-bold text-slate-300">-</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-400">Nomor WhatsApp Terhubung:</span>
-                        <span id="labelDeviceNumber" class="font-mono font-bold text-emerald-400">-</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-400">Nama Perangkat:</span>
-                        <span id="labelDeviceName" class="text-slate-300">-</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-400">Sisa Kuota / Masa Aktif:</span>
-                        <span id="labelDeviceQuota" class="text-slate-300">-</span>
-                    </div>
-                </div>
 
             </div>
 
         </div>
 
-        <!-- Right Column: Test Message -->
+        <!-- Right Column: Test Send & Guide -->
         <div class="lg:col-span-6 space-y-6">
 
             <!-- Test Send Message Form -->
@@ -156,21 +207,21 @@
                         <i class="fa-solid fa-paper-plane"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-white">Uji Coba Kirim Pesan via Fonnte</h3>
-                        <p class="text-[10px] text-slate-400">Kirim pesan WhatsApp nyata untuk memastikan token Fonnte aktif</p>
+                        <h3 class="text-sm font-bold text-white">Uji Coba Kirim Pesan WhatsApp</h3>
+                        <p class="text-[10px] text-slate-400">Tes kirim pesan nyata melalui nomor pengirim yang sedang terhubung</p>
                     </div>
                 </div>
 
                 <form id="formTestSend" onsubmit="submitTestSend(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nomor HP Tujuan (Penerima) <span class="text-rose-400">*</span></label>
-                        <input type="text" id="testPhone" name="target_phone" required placeholder="Contoh: 08123456789 atau 085148410891" 
+                        <input type="text" id="testPhone" name="target_phone" required placeholder="Contoh: 081234567890" 
                             class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono">
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Isi Pesan Uji Coba <span class="text-rose-400">*</span></label>
-                        <textarea id="testMessage" name="message" rows="3" required class="w-full px-3.5 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono">Halo! Ini adalah pesan uji coba pengiriman broadcast via Fonnte API dari Sistem Reminder Meeting Rig PT Besmindo.</textarea>
+                        <textarea id="testMessage" name="message" rows="3" required class="w-full px-3.5 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono">Halo! Ini adalah pesan uji coba dari Sistem Reminder Meeting Rig PT. Besmindo Materi Sewatama via WhatsApp Gateway Mandiri.</textarea>
                     </div>
 
                     <button type="submit" id="btnTestSend" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2">
@@ -180,17 +231,21 @@
                 </form>
             </div>
 
-            <!-- Fonnte Anti-Ban Information -->
+            <!-- Service Control & How-to Guide -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3 text-xs">
-                <div class="flex items-center space-x-2 text-emerald-400 font-bold">
-                    <i class="fa-solid fa-shield-check text-base"></i>
-                    <span>Fitur Anti-Ban Otomatis di Fonnte</span>
+                <div class="flex items-center space-x-2 text-sky-400 font-bold">
+                    <i class="fa-solid fa-terminal text-base"></i>
+                    <span>Petunjuk Menjalankan Gateway Mandiri di Server / Laptop</span>
                 </div>
-                <ul class="text-slate-400 space-y-1.5 list-disc list-inside text-[11px] leading-relaxed">
-                    <li>Sistem otomatis menyisipkan parameter <code class="text-emerald-300 bg-slate-800 px-1 rounded">delay</code> (jeda bertahap) di setiap pesan broadcast.</li>
-                    <li>Pengiriman massal diproses secara antrian (queue) oleh server cloud Fonnte.</li>
-                    <li>Nomor pengirim tidak melakukan spamming instan, sehingga terhindar dari pemblokiran otomatis WhatsApp.</li>
-                </ul>
+                <p class="text-slate-400 text-[11px] leading-relaxed">
+                    Jika service gateway belum aktif atau komputer baru saja dinyalakan ulang, jalankan perintah berikut di Command Prompt (cmd) / PowerShell:
+                </p>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1 font-mono text-[11px]">
+                    <div class="text-slate-400"># Masuk ke folder gateway</div>
+                    <div class="text-emerald-400">cd "c:\xampp\htdocs\Project Besmindo Reminder\whatsapp-gateway"</div>
+                    <div class="text-slate-400 mt-2"># Jalankan service</div>
+                    <div class="text-sky-400">node server.js</div>
+                </div>
             </div>
 
         </div>
@@ -200,70 +255,130 @@
 </div>
 
 <script>
-    function toggleTokenVisibility() {
-        const input = document.getElementById('inputFonnteToken');
-        const icon = document.getElementById('iconEye');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    }
+    let pollInterval = null;
 
-    function checkFonnteLiveStatus() {
-        const badge = document.getElementById('fonnteBadge');
-        badge.innerHTML = `
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping mr-1.5"></span> Memeriksa...
-            </span>`;
-
-        fetch('<?= base_url('reminder/fonnte_status') ?>')
+    function checkGatewayStatus() {
+        fetch('http://localhost:3000/status')
             .then(r => r.json())
             .then(data => {
-                const statusLabel = document.getElementById('labelDeviceStatus');
-                const numberLabel = document.getElementById('labelDeviceNumber');
-                const nameLabel = document.getElementById('labelDeviceName');
-                const quotaLabel = document.getElementById('labelDeviceQuota');
+                const qrLoading          = document.getElementById('qrLoading');
+                const qrContainer        = document.getElementById('qrContainer');
+                const connectedContainer = document.getElementById('connectedContainer');
+                const qrImage            = document.getElementById('qrImage');
+                const badge              = document.getElementById('connectionBadge');
 
-                if (data.success && data.connected) {
+                if (data.antiBan) {
+                    const delayEl = document.getElementById('metricDelay');
+                    const hourlyEl = document.getElementById('metricHourly');
+                    const queueEl = document.getElementById('metricQueue');
+                    if (delayEl) delayEl.textContent = `${data.antiBan.minDelaySec} – ${data.antiBan.maxDelaySec} Detik`;
+                    if (hourlyEl) hourlyEl.textContent = `${data.antiBan.sentThisHour} / ${data.antiBan.maxPerHour} Pesan`;
+                    if (queueEl) {
+                        queueEl.innerHTML = data.antiBan.queueLength > 0 
+                            ? `<span class="text-amber-400 font-bold animate-pulse">${data.antiBan.queueLength} Pesan (Proses)</span>` 
+                            : `<span class="text-emerald-400">0 Pesan (Kosong)</span>`;
+                    }
+                }
+
+                if (data.connected) {
+                    // TERHUBUNG
+                    qrLoading.classList.add('hidden');
+                    qrContainer.classList.add('hidden');
+                    qrContainer.classList.remove('flex');
+                    connectedContainer.classList.remove('hidden');
+                    connectedContainer.classList.add('flex');
+
+                    const numLabel = document.getElementById('connectedNumberLabel');
+                    if (numLabel && data.senderNumber) {
+                        let num = data.senderNumber.toString().replace(/[^0-9]/g, '');
+                        if (num.startsWith('62')) num = '0' + num.substring(2);
+                        numLabel.textContent = 'Nomor Pengirim Aktif: ' + num;
+                    }
+
                     badge.innerHTML = `
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                            <i class="fa-solid fa-circle-check mr-1.5"></i> Fonnte Terhubung
+                            <i class="fa-solid fa-circle-check mr-1.5"></i> Terhubung (${data.senderNumber || '<?= htmlspecialchars($senderNumber) ?>'})
                         </span>`;
-                    statusLabel.innerHTML = '<span class="text-emerald-400 font-bold">Terhubung (Online)</span>';
-                    numberLabel.textContent = data.deviceNumber || '<?= htmlspecialchars($senderNumber) ?>';
-                    nameLabel.textContent = data.name || 'Perangkat Fonnte';
-                    quotaLabel.textContent = (data.quota ? data.quota + ' pesan' : '-') + (data.expired ? ' (Exp: ' + data.expired + ')' : '');
-                } else if (data.success && !data.connected) {
+                } else if (data.qr) {
+                    // QR CODE READY
+                    qrLoading.classList.add('hidden');
+                    connectedContainer.classList.add('hidden');
+                    connectedContainer.classList.remove('flex');
+                    qrContainer.classList.remove('hidden');
+                    qrContainer.classList.add('flex');
+                    qrImage.src = data.qr;
                     badge.innerHTML = `
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                            <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Perlu Scan di Fonnte
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping mr-1.5"></span> Scan QR Sekarang
                         </span>`;
-                    statusLabel.innerHTML = '<span class="text-amber-400 font-bold">Perangkat Belum Scan QR di Fonnte</span>';
-                    numberLabel.textContent = data.deviceNumber || '-';
-                    nameLabel.textContent = data.name || '-';
-                    quotaLabel.textContent = data.quota || '-';
                 } else {
+                    // INITIALIZING
+                    qrContainer.classList.add('hidden');
+                    qrContainer.classList.remove('flex');
+                    connectedContainer.classList.add('hidden');
+                    connectedContainer.classList.remove('flex');
+                    qrLoading.classList.remove('hidden');
+                    qrLoading.innerHTML = `
+                        <div class="text-center space-y-3">
+                            <i class="fa-solid fa-spinner fa-spin text-3xl text-sky-400"></i>
+                            <p class="text-xs text-white font-semibold">Menghubungkan ke Server WhatsApp...</p>
+                            <p class="text-[11px] text-slate-400">QR Code akan muncul otomatis dalam beberapa detik.</p>
+                        </div>`;
                     badge.innerHTML = `
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
-                            <i class="fa-solid fa-circle-xmark mr-1.5"></i> Token Tidak Valid
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                            <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping mr-1.5"></span> Menginisialisasi...
                         </span>`;
-                    statusLabel.innerHTML = `<span class="text-rose-400 font-bold">${data.message || 'Token Salah'}</span>`;
-                    numberLabel.textContent = '-';
-                    nameLabel.textContent = '-';
-                    quotaLabel.textContent = '-';
                 }
             })
-            .catch(err => {
+            .catch(() => {
+                const qrLoading = document.getElementById('qrLoading');
+                const badge     = document.getElementById('connectionBadge');
+                qrLoading.classList.remove('hidden');
+                qrLoading.innerHTML = `
+                    <div class="text-center space-y-3">
+                        <i class="fa-solid fa-triangle-exclamation text-3xl text-rose-400"></i>
+                        <p class="text-xs text-rose-300 font-semibold">Service Gateway Tidak Aktif di Port 3000</p>
+                        <p class="text-[11px] text-slate-400">Jalankan perintah ini di Command Prompt:</p>
+                        <div class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-left max-w-xs mx-auto">
+                            <code class="text-emerald-400 text-[11px] font-mono block">cd "c:\\xampp\\htdocs\\Project Besmindo Reminder\\whatsapp-gateway"</code>
+                            <code class="text-emerald-400 text-[11px] font-mono block mt-1">node server.js</code>
+                        </div>
+                    </div>`;
                 badge.innerHTML = `
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
-                        <i class="fa-solid fa-circle-xmark mr-1.5"></i> Gagal Cek Fonnte
+                        <i class="fa-solid fa-circle-xmark mr-1.5"></i> Service Offline
                     </span>`;
             });
+    }
+
+    function logoutWhatsApp() {
+        Swal.fire({
+            title: 'Putuskan Sesi WhatsApp?',
+            text: 'Sesi WhatsApp akan di-logout dan memerlukan scan QR ulang.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Putuskan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#e11d48',
+            background: '#1e293b',
+            color: '#f8fafc'
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch('http://localhost:3000/logout', { method: 'POST' })
+                    .then(r => r.json())
+                    .then(res => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sesi Diputuskan',
+                            text: res.message,
+                            background: '#1e293b',
+                            color: '#f8fafc',
+                            confirmButtonColor: '#059669'
+                        });
+                        checkGatewayStatus();
+                    });
+            }
+        });
     }
 
     function submitTestSend(e) {
@@ -273,7 +388,7 @@
         const msg = document.getElementById('testMessage').value;
 
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim via Fonnte...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim via Gateway Mandiri...';
 
         fetch('<?= base_url('reminder/test_send') ?>', {
             method: 'POST',
@@ -291,7 +406,7 @@
             if (res.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Pesan Terkirim via Fonnte!',
+                    title: 'Pesan Terkirim!',
                     text: res.message,
                     confirmButtonColor: '#059669',
                     background: '#1e293b',
@@ -300,7 +415,7 @@
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal Kirim via Fonnte',
+                    title: 'Gagal Kirim Pesan',
                     text: res.message,
                     confirmButtonColor: '#ef4444',
                     background: '#1e293b',
@@ -323,6 +438,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        checkFonnteLiveStatus();
+        checkGatewayStatus();
+        pollInterval = setInterval(checkGatewayStatus, 1500);
     });
 </script>

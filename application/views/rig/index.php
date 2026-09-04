@@ -46,6 +46,17 @@
                             <span class="font-mono text-emerald-400">+<?= htmlspecialchars($r['pj_phone']) ?></span>
                         </div>
                         <div class="flex items-center justify-between text-slate-400">
+                            <span>WhatsApp Group:</span>
+                            <?php if (!empty($r['wa_group_id'])): ?>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 max-w-[130px] truncate" title="<?= htmlspecialchars($r['wa_group_name'] ?: $r['wa_group_id']) ?>">
+                                    <i class="fa-brands fa-whatsapp mr-1"></i>
+                                    <span class="truncate"><?= htmlspecialchars($r['wa_group_name'] ?: 'Terhubung') ?></span>
+                                </span>
+                            <?php else: ?>
+                                <span class="text-slate-500 text-[11px] italic">Belum diatur</span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex items-center justify-between text-slate-400">
                             <span>Jumlah Personil Crew:</span>
                             <span class="font-bold text-sky-400"><?= $r['total_crew'] ?> Orang</span>
                         </div>

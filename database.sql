@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS `rigs` (
     `name` VARCHAR(100) NOT NULL,
     `code` VARCHAR(50) NOT NULL UNIQUE,
     `location` VARCHAR(150) NOT NULL,
+    `wa_group_id` VARCHAR(100) DEFAULT NULL,
+    `wa_group_name` VARCHAR(150) DEFAULT NULL,
     `description` TEXT,
     `pj_name` VARCHAR(100) NOT NULL,
     `pj_phone` VARCHAR(25) NOT NULL,
@@ -53,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `meetings` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `title` VARCHAR(150) NOT NULL,
     `topic` TEXT NOT NULL,
+    `meeting_notes` TEXT DEFAULT NULL,
     `rig_id` INT NOT NULL,
     `pj_crew_id` INT DEFAULT NULL,
     `meeting_date` DATE NOT NULL,
@@ -62,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `meetings` (
     `is_recurring` TINYINT(1) DEFAULT 0,
     `recurring_day` VARCHAR(20) DEFAULT NULL, -- 'Monday', 'Tuesday', etc.
     `status` ENUM('scheduled', 'in_progress', 'completed', 'cancelled') DEFAULT 'scheduled',
+    `closed_at` DATETIME DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`rig_id`) REFERENCES `rigs`(`id`) ON DELETE CASCADE,
@@ -131,10 +135,11 @@ ON DUPLICATE KEY UPDATE `id`=`id`;
 
 -- App Settings
 INSERT INTO `app_settings` (`setting_key`, `setting_value`) VALUES
-('company_name', 'PT Besmindo Oilfield Operations'),
-('wa_gateway_provider', 'SIMULATOR'),
-('wa_api_url', 'https://api.fonnte.com/send'),
-('wa_api_token', 'SAMPLE_TOKEN_BESMINDO_DEMO'),
+('company_name', 'PT. Besmindo Materi Sewatama'),
+('wa_gateway_provider', 'LOCAL_NODE'),
+('wa_sender_number', ''),
+('wa_api_url', 'http://localhost:3000/send-message'),
+('wa_api_token', ''),
 ('late_tolerance_minutes', '10'),
 ('default_teams_link', 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_besmindo_rig_routine%40thread.v2/0?context=%7b%22Tid%22%3a%22besmindo-group%22%7d')
 ON DUPLICATE KEY UPDATE `setting_key`=`setting_key`;

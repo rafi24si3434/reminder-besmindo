@@ -21,10 +21,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // ─── Anti-ban configuration ──────────────────────────────────────────────────
 const ANTI_BAN = {
-    minDelay     : 4000,  // min jeda antar pesan (ms)
-    maxDelay     : 9000,  // max jeda antar pesan (ms)
-    maxPerHour   : 50,    // maks pesan per jam
-    presenceDelay: 1500,  // durasi simulasi "mengetik" (ms)
+    minDelay      : 15000, // min jeda antar pesan pribadi: 15 detik (Anti-Ban Aman)
+    maxDelay      : 35000, // max jeda antar pesan pribadi: 35 detik (Jitter Acak)
+    maxPerHour    : 25,    // maks 25 pesan personal per jam (mencegah suspend 5 jam)
+    minTyping     : 3000,  // min simulasi mengetik: 3 detik
+    maxTyping     : 6500,  // max simulasi mengetik: 6.5 detik
+    availableDelay: 1500,  // durasi online sebelum mulai mengetik (ms)
 };
 
 let sentThisHour   = 0;
@@ -32,26 +34,28 @@ let hourResetTimer = null;
 
 function resetHourCounter() {
     sentThisHour = 0;
-    console.log('[Anti-Ban] Counter jam direset. Siap kirim lagi.');
+    console.log('[Anti-Ban] 🔄 Counter pesan jam ini direset. Siap mengirim kembali.');
 }
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let sock             = null;
 let latestQr         = null;
 let isConnected      = false;
-let connectedPhone   = '085148410891';
+let connectedPhone   = '-';
 let connectionStatus = 'initializing';
 
 // ─── Message queue ────────────────────────────────────────────────────────────
-let messageQueue      = [];
-let isProcessingQueue = false;
+let messageQueue        = [];
+let isProcessingQueue   = false;
+let currentlyProcessing = null; // { jid, number, recipientName, status, statusText, startedAt, isGroup }
+let recentDispatches    = [];   // Array of { id, jid, number, recipientName, isGroup, status, time, timestamp }
 
 const CLOSINGS = [
-    '_Management PT Besmindo Oilfield Operations_',
-    '_Tim Operasional PT Besmindo_',
-    '_Salam, Manajemen Besmindo_',
-    '_Hormat kami, PT Besmindo Oilfield Operations_',
-    '_PT Besmindo — Divisi Operasional Rig_',
+    '_Management PT. Besmindo Materi Sewatama_',
+    '_Tim Operasional PT. Besmindo Materi Sewatama_',
+    '_Salam, Manajemen PT. Besmindo Materi Sewatama_',
+    '_Hormat kami, PT. Besmindo Materi Sewatama_',
+    '_PT. Besmindo Materi Sewatama — Divisi Operasional Rig_',
 ];
 
 function randomClosing() {
@@ -64,12 +68,16 @@ function randomDelay(min, max) {
 
 function humanizeMessage(message) {
     return message
-        .replace(/_Management PT Besmindo Oilfield Operations_/g, randomClosing())
-        .replace(/_PT Besmindo Oilfield Operations_/g, randomClosing());
+        .replace(/_Management PT\.? Besmindo (Materi Sewatama|Oilfield Operations)_/gi, randomClosing())
+        .replace(/_PT\.? Besmindo (Materi Sewatama|Oilfield Operations)_/gi, randomClosing());
 }
 
 function normalizePhone(number) {
-    let clean = number.toString().replace(/[^0-9]/g, '');
+    let clean = number.toString().trim();
+    if (clean.includes('@g.us')) {
+        return clean;
+    }
+    clean = clean.replace(/[^0-9]/g, '');
     if (clean.startsWith('0'))   clean = '62' + clean.substring(1);
     if (!clean.startsWith('62')) clean = '62' + clean;
     return `${clean}@s.whatsapp.net`;
@@ -82,31 +90,79 @@ async function processQueue() {
 
     while (messageQueue.length > 0) {
         if (!isConnected || !sock) {
-            console.log('[Queue] Gateway belum terhubung, antrian ditahan.');
-            break;
-        }
-        if (sentThisHour >= ANTI_BAN.maxPerHour) {
-            console.log(`[Anti-Ban] Batas ${ANTI_BAN.maxPerHour} pesan/jam tercapai. Menunggu reset...`);
+            console.log('[Queue] ⚠️ Gateway belum terhubung, antrian ditahan.');
             break;
         }
 
-        const { jid, message, resolve } = messageQueue.shift();
+        const isGroup = messageQueue[0].jid.endsWith('@g.us');
+
+        // Batas per jam hanya berlaku untuk chat personal, bukan group
+        if (!isGroup && sentThisHour >= ANTI_BAN.maxPerHour) {
+            console.log(`[Anti-Ban] 🛑 Batas aman ${ANTI_BAN.maxPerHour} pesan/jam tercapai agar nomor bebas dari ban. Antrian ditahan sampai jam berikutnya.`);
+            break;
+        }
+
+        const item = messageQueue.shift();
+        const { jid, message, resolve, recipientName } = item;
+        const numberOnly = jid.split('@')[0];
+        const isGroupItem = jid.endsWith('@g.us');
+
+        currentlyProcessing = {
+            jid,
+            number        : numberOnly,
+            recipientName : recipientName || (isGroupItem ? 'Grup WhatsApp Rig' : numberOnly),
+            status        : 'typing',
+            statusText    : 'Sedang Mengetik Pesan...',
+            isGroup       : isGroupItem,
+            startedAt     : Date.now()
+        };
 
         try {
-            // Simulasi "sedang mengetik"
+            const targetLabel = recipientName ? `${recipientName} (${jid})` : jid;
+            console.log(`[Anti-Ban] 👤 Mempersiapkan pengiriman ke: ${targetLabel}`);
+
+            // 1. Simulasi buka aplikasi / online status
+            await sock.sendPresenceUpdate('available');
+            await new Promise(r => setTimeout(r, ANTI_BAN.availableDelay));
+
+            // 2. Simulasi mengetik realistis (composing)
+            const typingDuration = randomDelay(ANTI_BAN.minTyping, ANTI_BAN.maxTyping);
             await sock.sendPresenceUpdate('composing', jid);
-            await new Promise(r => setTimeout(r, ANTI_BAN.presenceDelay));
+            console.log(`[Anti-Ban] ⌨️ Sedang mengetik pesan (${(typingDuration / 1000).toFixed(1)} detik)...`);
+            await new Promise(r => setTimeout(r, typingDuration));
+
+            // 3. Jeda berhenti mengetik sesaat sebelum kirim
             await sock.sendPresenceUpdate('paused', jid);
+            await new Promise(r => setTimeout(r, 600));
 
-            const result = await sock.sendMessage(jid, { text: humanizeMessage(message) });
-            sentThisHour++;
+            // 4. Kirim pesan ke WhatsApp
+            const finalMessage = humanizeMessage(message);
+            const result = await sock.sendMessage(jid, { text: finalMessage });
+            
+            if (!isGroup) {
+                sentThisHour++;
+            }
 
-            console.log(`[Queue] ✅ Terkirim ke ${jid} (${sentThisHour}/${ANTI_BAN.maxPerHour} pesan jam ini)`);
+            // Catat ke daftar berhasil terkirim
+            recentDispatches.unshift({
+                id            : Date.now() + Math.random().toString(36).substr(2, 4),
+                jid,
+                number        : numberOnly,
+                recipientName : recipientName || (isGroupItem ? 'Grup WhatsApp Rig' : numberOnly),
+                isGroup       : isGroupItem,
+                status        : 'sent',
+                time          : new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                timestamp     : Date.now()
+            });
+            if (recentDispatches.length > 50) recentDispatches.pop();
+
+            console.log(`[Queue] ✅ TERKIRIM ke ${targetLabel} (${sentThisHour}/${ANTI_BAN.maxPerHour} pesan jam ini). Sisa antrian: ${messageQueue.length}`);
 
             if (!hourResetTimer) {
                 hourResetTimer = setTimeout(() => {
                     resetHourCounter();
                     hourResetTimer = null;
+                    if (messageQueue.length > 0) processQueue();
                 }, 3600 * 1000);
             }
 
@@ -114,17 +170,50 @@ async function processQueue() {
 
         } catch (err) {
             console.error(`[Queue] ❌ Gagal kirim ke ${jid}:`, err.message);
+
+            recentDispatches.unshift({
+                id            : Date.now() + Math.random().toString(36).substr(2, 4),
+                jid,
+                number        : numberOnly,
+                recipientName : recipientName || (isGroupItem ? 'Grup WhatsApp Rig' : numberOnly),
+                isGroup       : isGroupItem,
+                status        : 'failed',
+                error         : err.message,
+                time          : new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                timestamp     : Date.now()
+            });
+            if (recentDispatches.length > 50) recentDispatches.pop();
+
             if (resolve) resolve({ success: false, message: 'Gagal kirim: ' + err.message });
         }
 
+        // 5. Jeda aman antar pesan
         if (messageQueue.length > 0) {
-            const delay = randomDelay(ANTI_BAN.minDelay, ANTI_BAN.maxDelay);
-            console.log(`[Anti-Ban] Menunggu ${(delay / 1000).toFixed(1)} detik sebelum pesan berikutnya...`);
+            // Jika pesan berikutnya adalah ke Group, jeda cukup 3-5 detik
+            // Jika pesan berikutnya personal, berikan jeda santai 15–35 detik
+            const nextIsGroup = messageQueue[0].jid.endsWith('@g.us');
+            const delay = nextIsGroup 
+                ? randomDelay(3000, 5000) 
+                : randomDelay(ANTI_BAN.minDelay, ANTI_BAN.maxDelay);
+
+            const nextName = messageQueue[0].recipientName || messageQueue[0].jid.split('@')[0];
+            currentlyProcessing = {
+                jid,
+                number        : numberOnly,
+                recipientName : recipientName || (isGroupItem ? 'Grup WhatsApp Rig' : numberOnly),
+                status        : 'waiting_delay',
+                statusText    : `Jeda Aman Anti-Ban (${Math.round(delay / 1000)}s)...`,
+                delaySec      : Math.round(delay / 1000),
+                nextRecipient : nextName
+            };
+
+            console.log(`[Anti-Ban] ⏳ Menunggu jeda aman ${(delay / 1000).toFixed(1)} detik sebelum memproses pesan berikutnya...`);
             await new Promise(r => setTimeout(r, delay));
         }
     }
 
-    isProcessingQueue = false;
+    currentlyProcessing = null;
+    isProcessingQueue   = false;
 }
 
 // ─── WhatsApp socket ──────────────────────────────────────────────────────────
@@ -185,7 +274,7 @@ async function startSock() {
             latestQr         = null;
             connectionStatus = 'connected';
             const user = sock.user;
-            if (user?.id) connectedPhone = user.id.split(':')[0] || '085148410891';
+            if (user?.id) connectedPhone = user.id.split(':')[0] || '-';
             console.log(`[WhatsApp] ✅ Terhubung! Nomor pengirim: ${connectedPhone}`);
 
             // Proses antrian yang mungkin sudah menunggu
@@ -212,12 +301,45 @@ app.get('/status', (req, res) => {
             minDelaySec : ANTI_BAN.minDelay / 1000,
             maxDelaySec : ANTI_BAN.maxDelay / 1000,
         },
+        queue        : {
+            isProcessing        : isProcessingQueue,
+            currentlyProcessing : currentlyProcessing,
+            waiting             : messageQueue.map((item, idx) => ({
+                position      : idx + 1,
+                jid           : item.jid,
+                number        : item.jid.split('@')[0],
+                recipientName : item.recipientName || item.jid.split('@')[0],
+                isGroup       : item.jid.endsWith('@g.us'),
+                estWaitSec    : Math.round(((idx + 1) * ((ANTI_BAN.minDelay + ANTI_BAN.maxDelay) / 2000)))
+            })),
+            history             : recentDispatches.slice(0, 25),
+            totalSentSession    : recentDispatches.filter(d => d.status === 'sent').length,
+            totalFailedSession  : recentDispatches.filter(d => d.status === 'failed').length
+        },
         timestamp    : new Date().toISOString()
     });
 });
 
+app.get('/queue-status', (req, res) => {
+    res.json({
+        success             : true,
+        isProcessing        : isProcessingQueue,
+        currentlyProcessing : currentlyProcessing,
+        waiting             : messageQueue.map((item, idx) => ({
+            position      : idx + 1,
+            jid           : item.jid,
+            number        : item.jid.split('@')[0],
+            recipientName : item.recipientName || item.jid.split('@')[0],
+            isGroup       : item.jid.endsWith('@g.us'),
+            estWaitSec    : Math.round(((idx + 1) * ((ANTI_BAN.minDelay + ANTI_BAN.maxDelay) / 2000)))
+        })),
+        history             : recentDispatches.slice(0, 25),
+        totalSentSession    : recentDispatches.filter(d => d.status === 'sent').length
+    });
+});
+
 app.post('/send-message', async (req, res) => {
-    const { number, message } = req.body;
+    const { number, message, recipientName, async: isAsync } = req.body;
 
     if (!number || !message) {
         return res.status(400).json({ success: false, message: 'Parameter "number" dan "message" wajib diisi.' });
@@ -225,14 +347,29 @@ app.post('/send-message', async (req, res) => {
     if (!isConnected || !sock) {
         return res.status(503).json({ success: false, message: 'WhatsApp belum terhubung. Scan QR terlebih dahulu.' });
     }
-    if (sentThisHour >= ANTI_BAN.maxPerHour) {
-        return res.status(429).json({ success: false, message: `Batas ${ANTI_BAN.maxPerHour} pesan/jam tercapai. Tunggu beberapa menit.` });
-    }
 
     const jid = normalizePhone(number);
+    const isGroup = jid.endsWith('@g.us');
 
+    if (!isGroup && sentThisHour >= ANTI_BAN.maxPerHour && messageQueue.length >= 25) {
+        return res.status(429).json({ success: false, message: `Batas aman ${ANTI_BAN.maxPerHour} pesan/jam tercapai untuk menghindari skors/ban. Coba lagi beberapa saat lagi.` });
+    }
+
+    // Jika antrian sedang memproses atau diminta async (agar PHP tidak terkena curl timeout):
+    if (isAsync || isProcessingQueue || messageQueue.length > 0) {
+        messageQueue.push({ jid, message, recipientName: recipientName || null, resolve: null });
+        processQueue();
+        return res.json({
+            success     : true,
+            queued      : true,
+            message     : `Pesan ke ${recipientName || number} dijadwalkan dalam Antrian Aman Anti-Ban (antrian #${messageQueue.length}).`,
+            queueLength : messageQueue.length
+        });
+    }
+
+    // Jika antrian kosong dan ini adalah pengiriman tunggal langsung (misal tes kirim):
     const result = await new Promise((resolve) => {
-        messageQueue.push({ jid, message, resolve });
+        messageQueue.push({ jid, message, recipientName: recipientName || null, resolve });
         processQueue();
     });
 
@@ -240,34 +377,56 @@ app.post('/send-message', async (req, res) => {
 });
 
 app.post('/send-bulk', (req, res) => {
-    const { numbers, message } = req.body;
+    const { items, numbers, message } = req.body;
 
-    if (!Array.isArray(numbers) || numbers.length === 0 || !message) {
-        return res.status(400).json({ success: false, message: 'Parameter "numbers" (array) dan "message" wajib diisi.' });
-    }
     if (!isConnected || !sock) {
-        return res.status(503).json({ success: false, message: 'Gateway belum terhubung.' });
+        return res.status(503).json({ success: false, message: 'Gateway Mandiri belum terhubung. Silakan scan QR terlebih dahulu.' });
     }
 
-    const remaining = ANTI_BAN.maxPerHour - sentThisHour;
-    if (remaining <= 0) {
-        return res.status(429).json({ success: false, message: 'Batas pesan/jam tercapai. Coba lagi nanti.' });
+    let queuedCount = 0;
+
+    // Format 1: Array of personalized items: [{ target, message, recipientName, crew_id }, ...]
+    if (Array.isArray(items) && items.length > 0) {
+        for (const it of items) {
+            if (!it.target || !it.message) continue;
+            const jid = normalizePhone(it.target);
+            messageQueue.push({
+                jid,
+                message      : it.message,
+                recipientName: it.recipientName || it.name || null,
+                resolve      : null
+            });
+            queuedCount++;
+        }
+    } 
+    // Format 2: Array of numbers with single message
+    else if (Array.isArray(numbers) && message) {
+        for (const num of numbers) {
+            if (!num) continue;
+            const jid = normalizePhone(num);
+            messageQueue.push({
+                jid,
+                message,
+                recipientName: null,
+                resolve      : null
+            });
+            queuedCount++;
+        }
+    } else {
+        return res.status(400).json({ success: false, message: 'Data pengiriman broadcast tidak valid.' });
     }
 
-    let queued = 0;
-    for (const number of numbers) {
-        if (queued >= remaining) break;
-        const jid = normalizePhone(number);
-        messageQueue.push({ jid, message, resolve: null });
-        queued++;
-    }
     processQueue();
+
+    const avgDelaySec = (ANTI_BAN.minDelay + ANTI_BAN.maxDelay) / 2000;
+    const estMinutes  = Math.max(1, Math.ceil((queuedCount * avgDelaySec) / 60));
 
     return res.json({
         success          : true,
-        message          : `${queued} pesan masuk antrian (jeda otomatis ${ANTI_BAN.minDelay/1000}–${ANTI_BAN.maxDelay/1000} detik/pesan).`,
-        queued,
-        estimatedMinutes : Math.ceil((queued * ANTI_BAN.maxDelay) / 60000)
+        queued           : queuedCount,
+        queueLength      : messageQueue.length,
+        estimatedMinutes : estMinutes,
+        message          : `${queuedCount} pesan personil berhasil dimasukkan ke Antrian Aman Anti-Ban (jeda acak 15–35 detik per orang). Selesai dalam ~${estMinutes} menit.`
     });
 });
 

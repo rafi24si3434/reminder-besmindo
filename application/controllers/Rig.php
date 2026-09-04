@@ -51,7 +51,8 @@ class Rig extends MY_Controller
         $location = trim($this->input->post('location', TRUE));
         $description = trim($this->input->post('description', TRUE));
         $pj_name = trim($this->input->post('pj_name', TRUE));
-        $pj_phone = trim($this->input->post('pj_phone', TRUE));
+        $wa_group_id = trim($this->input->post('wa_group_id', TRUE));
+        $wa_group_name = trim($this->input->post('wa_group_name', TRUE));
         $is_active = $this->input->post('is_active') ? 1 : 0;
 
         if (empty($name) || empty($code) || empty($location) || empty($pj_name) || empty($pj_phone)) {
@@ -60,13 +61,15 @@ class Rig extends MY_Controller
         }
 
         $data = array(
-            'name'        => $name,
-            'code'        => $code,
-            'location'    => $location,
-            'description' => $description,
-            'pj_name'     => $pj_name,
-            'pj_phone'    => $pj_phone,
-            'is_active'   => $is_active
+            'name'          => $name,
+            'code'          => $code,
+            'location'      => $location,
+            'wa_group_id'   => $wa_group_id,
+            'wa_group_name' => $wa_group_name,
+            'description'   => $description,
+            'pj_name'       => $pj_name,
+            'pj_phone'      => $pj_phone,
+            'is_active'     => $is_active
         );
 
         if (!empty($id)) {
@@ -79,6 +82,7 @@ class Rig extends MY_Controller
 
         redirect('rig');
     }
+
 
     public function delete($id)
     {

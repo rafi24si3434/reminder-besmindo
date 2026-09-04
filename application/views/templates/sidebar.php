@@ -3,15 +3,9 @@ $current_segment = $this->uri->segment(1) ?: 'dashboard';
 $sub_segment = $this->uri->segment(2) ?: '';
 ?>
 <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 transition-transform duration-300 -translate-x-full lg:translate-x-0 flex flex-col">
-    <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800 bg-slate-950/60">
-        <a href="<?= base_url('dashboard') ?>" class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-sky-700 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
-                <i class="fa-solid fa-oil-well text-xl"></i>
-            </div>
-            <div>
-                <span class="font-bold text-base text-white tracking-wide block leading-tight">BESMINDO</span>
-                <span class="text-[10px] text-sky-400 font-semibold tracking-wider uppercase">Rig Meeting Reminder</span>
-            </div>
+    <div class="h-20 flex items-center justify-between px-4 border-b border-slate-800 bg-slate-950/80">
+        <a href="<?= base_url('dashboard') ?>" class="flex items-center space-x-2.5">
+            <img src="<?= base_url('assets/images/logo_besmindo.png') ?>" alt="PT Besmindo Materi Sewatama" class="h-10 w-auto object-contain max-w-[185px]">
         </a>
         <button type="button" class="lg:hidden text-slate-400 hover:text-white" onclick="toggleSidebar()">
             <i class="fa-solid fa-xmark text-lg"></i>
@@ -91,6 +85,11 @@ $sub_segment = $this->uri->segment(2) ?: '';
                         <span>Live Attendance</span>
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     </div>
+                </a>
+                <a href="<?= base_url('attendance/rekap') ?>" 
+                    class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-colors <?= ($current_segment === 'attendance' && $sub_segment === 'rekap') ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' ?>">
+                    <i class="fa-solid fa-file-signature w-5 text-center text-base text-sky-400"></i>
+                    <span>Rekap Absensi Sesi</span>
                 </a>
                 <a href="<?= base_url('attendance/simulator') ?>" 
                     class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-colors <?= ($current_segment === 'attendance' && $sub_segment === 'simulator') ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' ?>">

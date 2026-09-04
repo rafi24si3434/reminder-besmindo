@@ -17,7 +17,7 @@ class Meeting_model extends CI_Model
 
     public function get_meetings_detailed($status = NULL, $rig_id = NULL, $date = NULL)
     {
-        $this->db->select('meetings.*, rigs.name as rig_name, rigs.code as rig_code, crews.name as pj_name, crews.phone as pj_phone');
+        $this->db->select('meetings.*, rigs.name as rig_name, rigs.code as rig_code, rigs.wa_group_id, rigs.wa_group_name, crews.name as pj_name, crews.phone as pj_phone');
         $this->db->from('meetings');
         $this->db->join('rigs', 'rigs.id = meetings.rig_id', 'left');
         $this->db->join('crews', 'crews.id = meetings.pj_crew_id', 'left');
@@ -39,7 +39,7 @@ class Meeting_model extends CI_Model
 
     public function get_meeting_detail($id)
     {
-        $this->db->select('meetings.*, rigs.name as rig_name, rigs.code as rig_code, rigs.location as rig_location, crews.name as pj_name, crews.phone as pj_phone, crews.position as pj_position');
+        $this->db->select('meetings.*, rigs.name as rig_name, rigs.code as rig_code, rigs.location as rig_location, rigs.wa_group_id, rigs.wa_group_name, crews.name as pj_name, crews.phone as pj_phone, crews.position as pj_position');
         $this->db->from('meetings');
         $this->db->join('rigs', 'rigs.id = meetings.rig_id', 'left');
         $this->db->join('crews', 'crews.id = meetings.pj_crew_id', 'left');

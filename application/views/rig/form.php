@@ -5,7 +5,7 @@
             <h1 class="text-2xl font-black text-white tracking-tight">
                 <?= $rig ? 'Ubah Data Unit Rig' : 'Tambah Unit Rig Baru' ?>
             </h1>
-            <p class="text-xs text-slate-400 mt-1">Data lokasi rig, kode identifikasi dan penanggung jawab operasional</p>
+            <p class="text-xs text-slate-400 mt-1">Data lokasi rig, target WhatsApp Group, dan penanggung jawab operasional</p>
         </div>
         <a href="<?= base_url('rig') ?>" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
             <i class="fa-solid fa-arrow-left"></i>
@@ -39,6 +39,34 @@
                     <input type="text" name="location" value="<?= isset($rig['location']) ? htmlspecialchars($rig['location']) : '' ?>" required 
                         placeholder="Contoh: Libo Field Area 2, Riau"
                         class="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                </div>
+
+                <!-- WhatsApp Group Rig Section (100% Anti-Ban) -->
+                <div class="sm:col-span-2 bg-slate-950/70 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-white block">WhatsApp Group Unit Rig (Anti-Ban 100% Aman)</span>
+                            <span class="text-[10px] text-slate-400">Undangan & pengingat meeting akan otomatis terkirim ke ruang grup ini</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">ID Group WhatsApp (Target)</label>
+                            <input type="text" name="wa_group_id" id="inputWaGroupId" value="<?= isset($rig['wa_group_id']) ? htmlspecialchars($rig['wa_group_id']) : '' ?>" 
+                                placeholder="Contoh: 12036304xxxxxxxxxx@g.us"
+                                class="w-full px-3.5 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Nama Group WhatsApp</label>
+                            <input type="text" name="wa_group_name" id="inputWaGroupName" value="<?= isset($rig['wa_group_name']) ? htmlspecialchars($rig['wa_group_name']) : '' ?>" 
+                                placeholder="Contoh: Crew Rig 04 Libo Official"
+                                class="w-full px-3.5 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                        </div>
+                    </div>
                 </div>
 
                 <div>

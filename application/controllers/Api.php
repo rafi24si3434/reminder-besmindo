@@ -101,4 +101,203 @@ class Api extends CI_Controller
                 'timestamp' => date('d M Y H:i:s') . ' WIB'
             )));
     }
+
+    /**
+     * Endpoint Sinkronisasi Real-Time dari Teams Auto-Sync Robot
+     * Menerima array nama peserta yang sedang aktif di ruang Microsoft Teams
+     */
+    public function sync_teams_live()
+    {
+        // Izinkan CORS dari domain manapun termasuk teams.microsoft.com
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            exit(0);
+        }
+
+        $rawInput = file_get_contents('php://input');
+        $data = json_decode($rawInput, true);
+        if (!is_array($data)) {
+            $data = $this->input->post(NULL, TRUE) ?: array();
+        }
+
+        $meeting_id = isset($data['meeting_id']) ? (int)$data['meeting_id'] : 0;
+        $rawNames   = isset($data['names']) && is_array($data['names']) ? $data['names'] : array();
+
+        if (!$meeting_id) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Parameter meeting_id diperlukan.')));
+        }
+
+        $meeting = $this->Meeting_model->get_meeting_detail($meeting_id);
+        if (!$meeting) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Meeting tidak ditemukan.')));
+        }
+
+        $this->Attendance_model->init_meeting_attendances($meeting_id);
+        $attendances = $this->Attendance_model->get_meeting_attendances($meeting_id);
+
+        // Helper fungsi normalisasi nama (Sangat fleksibel & case-insensitive)
+        $normalizeName = function($str) {
+            // 1. Hapus teks dalam kurung: (Guest), (Tamu), (Presenter), (Organizer), (Penyelenggara), (You), dll
+            $str = preg_replace('/\s*\([^)]*\)/iu', '', $str);
+            // 2. Hapus kata-kata status umum di akhir nama
+            $str = preg_replace('/\b(organizer|penyelenggara|guest|tamu|presenter|attendee|peserta|you|anda)\b/iu', '', $str);
+            // 3. Hapus simbol, emoji, tanda baca selain huruf & angka
+            $str = preg_replace('/[^a-zA-Z0-9\s]/u', ' ', $str);
+            // 4. Standarisasi spasi ganda dan jadikan huruf kecil semua (lowercase)
+            return strtolower(trim(preg_replace('/\s+/', ' ', $str)));
+        };
+
+        // Siapkan daftar crew yang dinormalisasi
+        $crewLookup = array();
+        foreach ($attendances as $att) {
+            $cleanCrew = $normalizeName($att['crew_name']);
+            $words     = array_values(array_filter(explode(' ', $cleanCrew), function($w) { return strlen($w) >= 2; }));
+            $crewLookup[] = array(
+                'att'        => $att,
+                'clean_name' => $cleanCrew,
+                'words'      => $words
+            );
+        }
+
+        $newlyJoined      = array();
+        $currentlyPresent = array();
+        $unmatchedNames   = array();
+        $nowTime          = time();
+        $schedTime        = strtotime($meeting['meeting_date'] . ' ' . $meeting['start_time']);
+        $toleranceTime    = $schedTime + (10 * 60); // 10 menit toleransi
+
+        foreach ($rawNames as $rawName) {
+            $cleanName = $normalizeName($rawName);
+            if (empty($cleanName) || strlen($cleanName) < 2) continue;
+
+            $matchedAtt = NULL;
+
+            foreach ($crewLookup as $c) {
+                // 1. Exact match (Case-insensitive)
+                if ($c['clean_name'] === $cleanName) {
+                    $matchedAtt = $c['att'];
+                    break;
+                }
+
+                // 2. Substring match (salah satu mengandung nama yang lain)
+                if (strlen($c['clean_name']) >= 3 && strlen($cleanName) >= 3) {
+                    if (strpos($cleanName, $c['clean_name']) !== false || strpos($c['clean_name'], $cleanName) !== false) {
+                        $matchedAtt = $c['att'];
+                        break;
+                    }
+                }
+
+                // 3. Word token matching (Cocok kata demi kata)
+                $teamsWords = array_values(array_filter(explode(' ', $cleanName), function($w) { return strlen($w) >= 2; }));
+                $commonWords = array_intersect($c['words'], $teamsWords);
+
+                // Jika punya >= 1 kata yang sama panjang (misal: "MUHAMMAD RAFI" vs "Rafi")
+                if (count($commonWords) >= 2) {
+                    $matchedAtt = $c['att'];
+                    break;
+                } elseif (count($commonWords) === 1) {
+                    // Cek jika kata yang sama cukup spesifik (>= 4 huruf dan nama unik)
+                    $matchedWord = reset($commonWords);
+                    if (strlen($matchedWord) >= 4) {
+                        $matchedAtt = $c['att'];
+                        break;
+                    }
+                }
+
+                // 4. Similarity fuzzy matching >= 75%
+                similar_text($cleanName, $c['clean_name'], $pct);
+                if ($pct >= 75) {
+                    $matchedAtt = $c['att'];
+                    break;
+                }
+            }
+
+            if ($matchedAtt) {
+                $statusNow = $matchedAtt['status'];
+
+                // Jika crew belum tercatat hadir
+                if ($statusNow === 'BELUM_HADIR' || $statusNow === 'TIDAK_HADIR') {
+                    $newStatus = ($nowTime > $toleranceTime) ? 'TERLAMBAT' : 'HADIR';
+                    $this->Attendance_model->update($matchedAtt['id'], array(
+                        'status'           => $newStatus,
+                        'join_time'        => date('Y-m-d H:i:s'),
+                        'duration_minutes' => 1,
+                        'source'           => 'TEAMS_ROBOT',
+                        'notes'            => 'Terdeteksi otomatis via Teams Auto-Sync Robot'
+                    ));
+
+                    $newlyJoined[] = array(
+                        'crew_name' => $matchedAtt['crew_name'],
+                        'status'    => $newStatus,
+                        'time'      => date('H:i:s')
+                    );
+                } else {
+                    // Update durasi keikutsertaan crew yang sudah ada di ruang
+                    $joinTime = !empty($matchedAtt['join_time']) ? strtotime($matchedAtt['join_time']) : $nowTime;
+                    $duration = max(1, round(($nowTime - $joinTime) / 60));
+                    $this->Attendance_model->update($matchedAtt['id'], array(
+                        'duration_minutes' => $duration
+                    ));
+                }
+
+                $currentlyPresent[] = $matchedAtt['crew_name'];
+            } else {
+                $unmatchedNames[] = $rawName;
+            }
+        }
+
+        $stats = $this->Attendance_model->get_attendance_stats($meeting_id);
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'success'           => true,
+                'meeting_id'        => $meeting_id,
+                'meeting_title'     => $meeting['title'],
+                'received_count'    => count($rawNames),
+                'matched_count'     => count($currentlyPresent),
+                'newly_joined'      => $newlyJoined,
+                'currently_present' => array_values(array_unique($currentlyPresent)),
+                'unmatched_names'   => $unmatchedNames,
+                'stats'             => $stats,
+                'server_time'       => date('H:i:s') . ' WIB'
+            )));
+    }
+
+    /**
+     * Endpoint polling data live attendance untuk auto-refresh halaman browser
+     */
+    public function get_live_attendance($meeting_id)
+    {
+        header("Access-Control-Allow-Origin: *");
+        $meeting_id = (int)$meeting_id;
+        
+        $meeting = $this->Meeting_model->get_meeting_detail($meeting_id);
+        if (!$meeting) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Meeting tidak ditemukan.')));
+        }
+
+        $attendances = $this->Attendance_model->get_meeting_attendances($meeting_id);
+        $stats       = $this->Attendance_model->get_attendance_stats($meeting_id);
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'success'     => true,
+                'meeting'     => $meeting,
+                'attendances' => $attendances,
+                'stats'       => $stats,
+                'server_time' => date('H:i:s') . ' WIB'
+            )));
+    }
 }
+

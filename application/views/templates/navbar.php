@@ -1,34 +1,49 @@
-<header class="h-16 bg-slate-900/80 backdrop-blur border-b border-slate-800 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+<header class="h-16 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b transition-colors
+    bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md
+    border-zinc-200 dark:border-zinc-800">
+
     <div class="flex items-center space-x-3">
-        <button type="button" class="lg:hidden text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-800" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars text-lg"></i>
+        <button type="button" class="lg:hidden p-2 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars text-base"></i>
         </button>
-        <div class="flex items-center space-x-2">
-            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">
-                <i class="fa-solid fa-signal mr-1.5 text-[10px]"></i> Operational System
+        <div class="flex items-center space-x-2.5">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-sky-500 mr-2 animate-pulse"></span>
+                Operational System
             </span>
-            <span class="hidden md:inline-block text-xs text-slate-400">
-                <i class="fa-regular fa-clock mr-1"></i> <span id="liveClock"><?= date('H:i:s') ?></span> WIB
+            <span class="hidden md:inline-flex items-center text-xs text-zinc-500 dark:text-zinc-400">
+                <i class="fa-regular fa-clock mr-1.5 text-zinc-400"></i>
+                <span id="liveClock" class="font-mono"><?= date('H:i:s') ?></span>&nbsp;WIB
             </span>
         </div>
     </div>
 
-    <div class="flex items-center space-x-3">
-        <button type="button" onclick="triggerBackgroundReminders()" title="Periksa Jadwal & Trigger Reminder Otomatis Sekarang" 
-            class="hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
-            <i class="fa-solid fa-paper-plane text-emerald-400"></i>
+    <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Theme Toggle Button (Light / Dark Mode) -->
+        <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Ganti Mode Terang/Gelap"
+            class="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 transition">
+            <i id="themeIconSun" class="fa-solid fa-sun text-sm text-amber-500 hidden"></i>
+            <i id="themeIconMoon" class="fa-solid fa-moon text-sm text-sky-400 hidden"></i>
+        </button>
+
+        <button type="button" onclick="triggerBackgroundReminders()" title="Periksa Jadwal &amp; Trigger Reminder Otomatis Sekarang" 
+            class="hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition
+                bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700
+                text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
+            <i class="fa-solid fa-paper-plane text-emerald-500"></i>
             <span>Scan Reminders</span>
         </button>
 
         <a href="<?= base_url('meeting/create') ?>" 
-            class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-600/30 transition">
-            <i class="fa-solid fa-plus"></i>
+            class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition shadow-sm
+                bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
+            <i class="fa-solid fa-plus text-xs"></i>
             <span class="hidden sm:inline">Buat Jadwal Meeting</span>
             <span class="sm:hidden">Meeting</span>
         </a>
 
-        <a href="<?= base_url('install') ?>" title="Pengaturan Database & Dummy Data" 
-            class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition text-sm">
+        <a href="<?= base_url('install') ?>" title="Pengaturan Database &amp; Dummy Data" 
+            class="p-2 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-sm">
             <i class="fa-solid fa-database"></i>
         </a>
     </div>
@@ -36,25 +51,28 @@
 
 <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
     <?php if ($this->session->flashdata('success')): ?>
-        <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center justify-between animate-fadeIn">
+        <div class="mb-6 p-4 rounded-xl flex items-center justify-between border shadow-sm
+            bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200">
             <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+                <i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400 text-base"></i>
                 <span class="text-sm font-medium"><?= $this->session->flashdata('success') ?></span>
             </div>
-            <button type="button" onclick="this.parentElement.remove()" class="text-emerald-400/60 hover:text-emerald-300">
+            <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600/60 dark:text-emerald-400/60 hover:text-emerald-700 dark:hover:text-emerald-300">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
     <?php endif; ?>
 
     <?php if ($this->session->flashdata('error')): ?>
-        <div class="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between animate-fadeIn">
+        <div class="mb-6 p-4 rounded-xl flex items-center justify-between border shadow-sm
+            bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200">
             <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
+                <i class="fa-solid fa-triangle-exclamation text-rose-600 dark:text-rose-400 text-base"></i>
                 <span class="text-sm font-medium"><?= $this->session->flashdata('error') ?></span>
             </div>
-            <button type="button" onclick="this.parentElement.remove()" class="text-rose-400/60 hover:text-rose-300">
+            <button type="button" onclick="this.parentElement.remove()" class="text-rose-600/60 dark:text-rose-400/60 hover:text-rose-700 dark:hover:text-rose-300">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
     <?php endif; ?>
+

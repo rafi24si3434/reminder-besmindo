@@ -2,18 +2,23 @@
 
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">
+            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                 <?= $crew ? 'Ubah Data Crew Rig' : 'Tambah Personil Crew Baru' ?>
             </h1>
-            <p class="text-xs text-slate-400 mt-1">Lengkapi informasi personil crew untuk pengelolaan undangan & kehadiran</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Lengkapi informasi personil crew untuk pengelolaan undangan &amp; kehadiran</p>
         </div>
-        <a href="<?= base_url('crew') ?>" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
-            <i class="fa-solid fa-arrow-left"></i>
+        <a href="<?= base_url('crew') ?>"
+            class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition
+                bg-zinc-100 hover:bg-zinc-200 text-zinc-700 border-zinc-200
+                dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-700">
+            <i class="fa-solid fa-arrow-left text-xs"></i>
             <span>Kembali</span>
         </a>
     </div>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+    <div class="rounded-xl border p-6 sm:p-8 shadow-sm transition-colors
+        bg-white dark:bg-zinc-900
+        border-zinc-200 dark:border-zinc-800">
         <form action="<?= base_url('crew/save') ?>" method="POST" class="space-y-5">
             <?php if ($crew): ?>
                 <input type="hidden" name="id" value="<?= $crew['id'] ?>">
@@ -21,29 +26,41 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">NIK / ID Pegawai <span class="text-rose-400">*</span></label>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">NIK / ID Pegawai <span class="text-rose-500">*</span></label>
                     <input type="text" name="nik" value="<?= isset($crew['nik']) ? htmlspecialchars($crew['nik']) : '' ?>" required 
                         placeholder="Contoh: BSM-0108"
-                        class="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                        class="w-full px-3 py-2 rounded-lg border text-sm transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 placeholder-zinc-400
+                            focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nama Lengkap Crew <span class="text-rose-400">*</span></label>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Nama Lengkap Crew <span class="text-rose-500">*</span></label>
                     <input type="text" name="name" value="<?= isset($crew['name']) ? htmlspecialchars($crew['name']) : '' ?>" required 
                         placeholder="Contoh: Muhammad Ilham"
-                        class="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                        class="w-full px-3 py-2 rounded-lg border text-sm transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 placeholder-zinc-400
+                            focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Jabatan / Peran di Rig <span class="text-rose-400">*</span></label>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Jabatan / Peran di Rig <span class="text-rose-500">*</span></label>
                     <input type="text" name="position" value="<?= isset($crew['position']) ? htmlspecialchars($crew['position']) : '' ?>" required 
                         placeholder="Contoh: Driller / Floorman / Derrickman / HSE"
-                        class="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                        class="w-full px-3 py-2 rounded-lg border text-sm transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 placeholder-zinc-400
+                            focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Penempatan Unit Rig <span class="text-rose-400">*</span></label>
-                    <select name="rig_id" required class="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Penempatan Unit Rig <span class="text-rose-500">*</span></label>
+                    <select name="rig_id" required
+                        class="w-full px-3 py-2 rounded-lg border text-sm transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
                         <option value="">-- Pilih Unit Rig --</option>
                         <?php foreach ($rigs as $r): ?>
                             <option value="<?= $r['id'] ?>" <?= (isset($crew['rig_id']) && $crew['rig_id'] == $r['id']) ? 'selected' : '' ?>>
@@ -54,38 +71,50 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nomor WhatsApp Aktif <span class="text-rose-400">*</span></label>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Nomor WhatsApp Aktif <span class="text-rose-500">*</span></label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-400 text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500 text-sm">
                             <i class="fa-brands fa-whatsapp"></i>
                         </div>
                         <input type="text" name="phone" value="<?= isset($crew['phone']) ? htmlspecialchars($crew['phone']) : '' ?>" required 
                             placeholder="Contoh: 08123456789 atau 628123456789"
-                            class="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                            class="w-full pl-9 pr-3 py-2 rounded-lg border text-sm transition
+                                bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                                text-zinc-900 dark:text-zinc-100 placeholder-zinc-400
+                                focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Alamat Email (Opsional)</label>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Alamat Email (Opsional)</label>
                     <input type="email" name="email" value="<?= isset($crew['email']) ? htmlspecialchars($crew['email']) : '' ?>" 
                         placeholder="Contoh: crew@besmindo.co.id"
-                        class="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                        class="w-full px-3 py-2 rounded-lg border text-sm transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 placeholder-zinc-400
+                            focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
                 </div>
             </div>
 
             <div class="pt-2">
-                <label class="inline-flex items-center space-x-3 cursor-pointer">
-                    <input type="checkbox" name="is_active" value="1" <?= (!isset($crew['is_active']) || $crew['is_active'] == 1) ? 'checked' : '' ?> class="w-4 h-4 text-sky-600 bg-slate-800 border-slate-700 rounded focus:ring-sky-500">
-                    <span class="text-xs font-semibold text-slate-300">Crew Berstatus Aktif</span>
+                <label class="inline-flex items-center space-x-2.5 cursor-pointer">
+                    <input type="checkbox" name="is_active" value="1" <?= (!isset($crew['is_active']) || $crew['is_active'] == 1) ? 'checked' : '' ?>
+                        class="w-4 h-4 text-sky-600 rounded border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 focus:ring-sky-500">
+                    <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300">Crew Berstatus Aktif</span>
                 </label>
             </div>
 
-            <div class="pt-5 border-t border-slate-800 flex items-center justify-end space-x-3">
-                <a href="<?= base_url('crew') ?>" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+            <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-end space-x-2.5">
+                <a href="<?= base_url('crew') ?>"
+                    class="px-4 py-2 rounded-lg border text-xs font-medium transition
+                        bg-zinc-100 hover:bg-zinc-200 text-zinc-700 border-zinc-200
+                        dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-700">
                     Batal
                 </a>
-                <button type="submit" class="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-lg shadow-sky-600/30 transition flex items-center space-x-2">
-                    <i class="fa-solid fa-floppy-disk"></i>
+                <button type="submit"
+                    class="px-4 py-2 rounded-lg text-xs font-medium text-white shadow-sm transition flex items-center space-x-2
+                        bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i>
                     <span>Simpan Data Crew</span>
                 </button>
             </div>
@@ -93,3 +122,4 @@
     </div>
 
 </div>
+

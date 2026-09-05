@@ -338,6 +338,60 @@ app.get('/queue-status', (req, res) => {
     });
 });
 
+app.get('/groups', async (req, res) => {
+    if (!isConnected || !sock) {
+        return res.status(503).json({ success: false, message: 'WhatsApp Gateway belum terhubung. Silakan scan QR terlebih dahulu.' });
+    }
+    try {
+        const groups = await sock.groupFetchAllParticipating();
+        const list = Object.values(groups).map(g => ({
+            id: g.id,
+            name: g.subject || 'Tanpa Nama',
+            participantsCount: g.participants ? g.participants.length : 0
+        }));
+        return res.json({ success: true, data: list });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: 'Gagal memuat grup WhatsApp: ' + err.message });
+    }
+});
+
+app.get('/group-participants', async (req, res) => {
+    let { groupId } = req.query;
+    if (!groupId) {
+        return res.status(400).json({ success: false, message: 'Parameter groupId wajib disertakan.' });
+    }
+    if (!isConnected || !sock) {
+        return res.status(503).json({ success: false, message: 'WhatsApp Gateway belum terhubung. Silakan scan QR terlebih dahulu.' });
+    }
+    try {
+        let cleanId = groupId.toString().trim();
+        if (!cleanId.includes('@g.us')) cleanId += '@g.us';
+
+        const metadata = await sock.groupMetadata(cleanId);
+        const participants = (metadata.participants || []).map(p => {
+            const targetJid = (p.jid && p.jid.includes('@s.whatsapp.net')) ? p.jid : p.id;
+            const rawNumber = targetJid.split('@')[0];
+            const phone08 = rawNumber.startsWith('62') ? '0' + rawNumber.substring(2) : rawNumber;
+            return {
+                jid: targetJid,
+                number: rawNumber,
+                phoneFormatted: phone08,
+                isAdmin: p.admin === 'admin' || p.admin === 'superadmin'
+            };
+        });
+
+        return res.json({
+            success: true,
+            groupId: metadata.id,
+            groupName: metadata.subject || 'Grup WhatsApp',
+            total: participants.length,
+            participants: participants
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: 'Gagal mengambil anggota grup: ' + err.message });
+    }
+});
+
 app.post('/send-message', async (req, res) => {
     const { number, message, recipientName, async: isAsync } = req.body;
 

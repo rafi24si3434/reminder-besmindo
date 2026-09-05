@@ -31,9 +31,7 @@
 
     <div class="border-b-2 border-slate-900 pb-4 mb-6 flex items-center justify-between">
         <div class="flex items-center space-x-4">
-            <div class="p-2 bg-slate-900 rounded-lg">
-                <img src="<?= base_url('assets/images/logo_besmindo.png') ?>" alt="PT Besmindo Materi Sewatama" class="h-12 w-auto object-contain">
-            </div>
+            <img src="<?= base_url('assets/images/logo_besmindo_light.png') ?>" alt="PT Besmindo Materi Sewatama" class="h-12 w-auto object-contain">
             <div>
                 <h1 class="text-base font-black tracking-wider text-slate-900">PT. BESMINDO MATERI SEWATAMA</h1>
                 <p class="text-[10px] text-slate-600 font-medium">Oilfield Equipment Sales & Rental, Drilling & Work Over Rig Services</p>

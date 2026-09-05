@@ -51,13 +51,40 @@ class Rig extends MY_Controller
         $location = trim($this->input->post('location', TRUE));
         $description = trim($this->input->post('description', TRUE));
         $pj_name = trim($this->input->post('pj_name', TRUE));
+        $pj_phone = trim($this->input->post('pj_phone', TRUE));
         $wa_group_id = trim($this->input->post('wa_group_id', TRUE));
         $wa_group_name = trim($this->input->post('wa_group_name', TRUE));
         $is_active = $this->input->post('is_active') ? 1 : 0;
 
+        $redirect_target = !empty($id) ? 'rig/edit/' . $id : 'rig/create';
+
         if (empty($name) || empty($code) || empty($location) || empty($pj_name) || empty($pj_phone)) {
             $this->session->set_flashdata('error', 'Nama Rig, Kode, Lokasi, Nama PJ, dan No WA PJ wajib diisi.');
-            redirect('rig/create');
+            redirect($redirect_target);
+            return;
+        }
+
+        // Cek apakah kode rig sudah digunakan oleh Rig lain
+        $this->db->where('code', $code);
+        if (!empty($id)) {
+            $this->db->where('id !=', $id);
+        }
+        $existing = $this->db->get('rigs')->row_array();
+        if ($existing) {
+            $this->session->set_flashdata('error', 'Kode Rig "' . htmlspecialchars($code) . '" sudah dipakai oleh rig lain. Gunakan kode yang unik.');
+            redirect($redirect_target);
+            return;
+        }
+
+        // Format dan bersihkan WhatsApp Group ID jika diisi
+        if (!empty($wa_group_id)) {
+            $wa_group_id = str_replace(' ', '', $wa_group_id);
+            // Jika user memasukkan angka saja tanpa akhiran domain, otomatis tambahkan @g.us
+            if (strpos($wa_group_id, '@') === false) {
+                $wa_group_id = $wa_group_id . '@g.us';
+            }
+        } else {
+            $wa_group_id = null;
         }
 
         $data = array(
@@ -65,7 +92,7 @@ class Rig extends MY_Controller
             'code'          => $code,
             'location'      => $location,
             'wa_group_id'   => $wa_group_id,
-            'wa_group_name' => $wa_group_name,
+            'wa_group_name' => !empty($wa_group_name) ? $wa_group_name : null,
             'description'   => $description,
             'pj_name'       => $pj_name,
             'pj_phone'      => $pj_phone,
@@ -81,6 +108,33 @@ class Rig extends MY_Controller
         }
 
         redirect('rig');
+    }
+
+    /**
+     * AJAX endpoint to fetch participating WhatsApp groups from local Node gateway
+     */
+    public function api_groups()
+    {
+        $this->output->set_content_type('application/json');
+
+        $ch = curl_init('http://localhost:3000/groups');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError || $httpCode !== 200) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Gateway WhatsApp belum aktif atau belum scan QR di http://localhost:3000.'
+            ]);
+            return;
+        }
+
+        echo $response;
     }
 
 

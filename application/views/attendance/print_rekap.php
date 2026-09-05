@@ -315,7 +315,7 @@
         <!-- Kop Surat Resmi -->
         <div class="kop-surat">
             <div class="kop-logo">
-                <img src="<?= base_url('assets/images/logo_besmindo.png') ?>" alt="PT Besmindo Materi Sewatama">
+                <img src="<?= base_url('assets/images/logo_besmindo_light.png') ?>" alt="PT Besmindo Materi Sewatama">
             </div>
             <div class="kop-text">
                 <h2>PT. BESMINDO MATERI SEWATAMA</h2>

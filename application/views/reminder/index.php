@@ -4,50 +4,50 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <div class="flex items-center space-x-2">
-                <i class="fa-brands fa-whatsapp text-2xl text-emerald-400"></i>
-                <h1 class="text-2xl font-black text-white tracking-tight">Pusat Layanan Undangan & Broadcast WhatsApp</h1>
+                <i class="fa-brands fa-whatsapp text-2xl text-emerald-600 dark:text-emerald-400"></i>
+                <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Pusat Layanan Undangan & Broadcast WhatsApp</h1>
             </div>
-            <p class="text-xs text-slate-400 mt-1">Distribusi undangan resmi dan pengingat bertingkat ke WhatsApp Group Rig & personil crew</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Distribusi undangan resmi dan pengingat bertingkat ke WhatsApp Group Rig & personil crew</p>
         </div>
 
         <!-- Quick Navigation Tab Bar -->
-        <div class="inline-flex p-1 bg-slate-900 border border-slate-800 rounded-xl shadow-lg">
-            <a href="<?= base_url('reminder') ?>" class="px-3.5 py-1.5 rounded-lg bg-sky-600 text-white text-xs font-semibold shadow transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-paper-plane"></i>
+        <div class="inline-flex p-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xs">
+            <a href="<?= base_url('reminder') ?>" class="px-3 py-1.5 rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-semibold shadow-xs transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-paper-plane text-sky-600 dark:text-sky-400"></i>
                 <span>Broadcast</span>
             </a>
-            <a href="<?= base_url('reminder/gateway') ?>" class="px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-semibold transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-tower-broadcast text-sky-400"></i>
+            <a href="<?= base_url('reminder/gateway') ?>" class="px-3 py-1.5 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-800 text-xs font-medium transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-tower-broadcast text-emerald-600 dark:text-emerald-400"></i>
                 <span>Status Gateway</span>
             </a>
-            <a href="<?= base_url('reminder/log') ?>" class="px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-semibold transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
+            <a href="<?= base_url('reminder/log') ?>" class="px-3 py-1.5 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-800 text-xs font-medium transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-clock-rotate-left"></i>
                 <span>Log Outbox</span>
             </a>
         </div>
     </div>
 
     <!-- Active Sender Device Status Banner -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center space-x-3.5">
-            <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl flex-shrink-0">
+            <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0">
                 <i class="fa-brands fa-whatsapp"></i>
             </div>
             <div>
                 <div class="flex items-center space-x-2">
-                    <span class="text-xs font-bold text-white uppercase tracking-wider">Engine WhatsApp Gateway:</span>
-                    <span class="font-mono font-bold text-emerald-400 text-xs">Gateway Mandiri</span>
+                    <span class="text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Engine WhatsApp Gateway:</span>
+                    <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">Gateway Mandiri</span>
                 </div>
-                <div class="flex items-center space-x-2 mt-0.5 text-[11px] text-slate-400" id="gatewayLiveStatus">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <div class="flex items-center space-x-2 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400" id="gatewayLiveStatus">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                     <span>Memeriksa status Gateway Mandiri...</span>
                 </div>
             </div>
         </div>
 
         <div class="flex items-center space-x-2">
-            <a href="<?= base_url('reminder/gateway') ?>" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-gear text-sky-400"></i>
+            <a href="<?= base_url('reminder/gateway') ?>" class="px-3.5 py-2 rounded-lg bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 text-xs font-semibold shadow-xs transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-gear text-sky-600 dark:text-sky-400"></i>
                 <span>Pengaturan Gateway</span>
             </a>
         </div>
@@ -56,11 +56,11 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <!-- Form Column -->
-        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+        <div class="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-xs space-y-5">
             <form action="<?= base_url('reminder/send') ?>" method="POST" id="formBroadcast" class="space-y-5">
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Pilih Jadwal Meeting Rig Target <span class="text-rose-400">*</span></label>
+                    <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2">Pilih Jadwal Meeting Rig Target <span class="text-rose-500">*</span></label>
                     <input type="hidden" name="meeting_id" value="<?= $selectedMeeting ? $selectedMeeting['id'] : '' ?>">
                     <div class="flex flex-wrap items-center gap-3">
                         <?php $this->load->view('components/meeting_switcher', array(
@@ -70,7 +70,7 @@
                             'mode'            => 'query_param'
                         )); ?>
                         <?php if (!$selectedMeeting): ?>
-                            <span class="text-xs text-amber-400 animate-pulse flex items-center space-x-1 font-semibold">
+                            <span class="text-xs text-amber-600 dark:text-amber-400 animate-pulse flex items-center space-x-1 font-medium">
                                 <i class="fa-solid fa-hand-pointer"></i>
                                 <span>Klik tombol di atas untuk memilih jadwal meeting target</span>
                             </span>
@@ -81,36 +81,36 @@
                 <?php if ($selectedMeeting): ?>
 
                     <?php if ($selectedMeeting['status'] === 'completed'): ?>
-                        <div class="bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-500/30 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 rounded-xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
                                     <i class="fa-solid fa-lock text-lg"></i>
                                 </div>
                                 <div>
                                     <div class="flex items-center space-x-2">
-                                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">Sesi Rapat Resmi Telah Ditutup</h4>
-                                        <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">
+                                        <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Sesi Rapat Resmi Telah Ditutup</h4>
+                                        <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-mono">
                                             <?= !empty($selectedMeeting['closed_at']) ? date('d M Y, H:i', strtotime($selectedMeeting['closed_at'])) . ' WIB' : 'Completed' ?>
                                         </span>
                                     </div>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">
+                                    <p class="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
                                         Seluruh data absensi telah dikunci &amp; direkap. Anda dapat melihat hasil notulensi atau mencetak laporan resmi.
                                     </p>
                                 </div>
                             </div>
-                            <a href="<?= base_url('attendance/rekap/' . $selectedMeeting['id']) ?>" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/30 transition flex items-center space-x-1.5 shrink-0">
+                            <a href="<?= base_url('attendance/rekap/' . $selectedMeeting['id']) ?>" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-xs transition flex items-center space-x-1.5 shrink-0">
                                 <i class="fa-solid fa-file-signature"></i>
                                 <span>Buka Rekap Absensi</span>
                             </a>
                         </div>
                     <?php else: ?>
-                        <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs text-slate-300">
+                        <div class="bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-lg p-3 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-300">
                             <div class="flex items-center space-x-2">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                <span>Status Rapat: <strong class="text-white">Aktif (In Progress)</strong></span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                                <span>Status Rapat: <strong class="text-zinc-900 dark:text-zinc-100 font-semibold">Aktif (In Progress)</strong></span>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <a href="<?= base_url('attendance/rekap/' . $selectedMeeting['id']) ?>" class="text-xs font-semibold text-sky-400 hover:text-sky-300 underline flex items-center space-x-1">
+                                <a href="<?= base_url('attendance/rekap/' . $selectedMeeting['id']) ?>" class="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline flex items-center space-x-1">
                                     <i class="fa-solid fa-file-lines"></i>
                                     <span>Tutup Sesi &amp; Rekap Absensi &rarr;</span>
                                 </a>
@@ -119,55 +119,55 @@
                     <?php endif; ?>
 
                     <!-- Target Broadcast Mode (Group vs Personal) -->
-                    <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-3">
                         <div class="flex items-center justify-between">
-                            <label class="block text-xs font-bold text-white uppercase tracking-wider">
+                            <label class="block text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
                                 Mode Tujuan Pengiriman Broadcast
                             </label>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                                 🛡️ PROTEKSI ANTI-BAN
                             </span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                            <label class="flex flex-col p-3 rounded-xl border border-emerald-500/50 bg-emerald-950/20 hover:bg-emerald-950/40 cursor-pointer transition text-xs">
+                            <label class="flex flex-col p-3 rounded-lg border border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10 cursor-pointer transition text-xs">
                                 <div class="flex items-center space-x-2 mb-1">
-                                    <input type="radio" name="target_mode" value="GROUP" checked onchange="handleTargetModeChange(this.value)" class="w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700">
-                                    <span class="font-bold text-emerald-300">WhatsApp Group Rig</span>
+                                    <input type="radio" name="target_mode" value="GROUP" checked onchange="handleTargetModeChange(this.value)" class="w-4 h-4 text-emerald-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700">
+                                    <span class="font-bold text-emerald-700 dark:text-emerald-400">WhatsApp Group Rig</span>
                                 </div>
-                                <span class="text-[10px] text-slate-400 leading-tight">100% Anti-Ban Aman. Kirim langsung ke grup unit Rig.</span>
+                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-tight">100% Anti-Ban Aman. Kirim langsung ke grup unit Rig.</span>
                             </label>
 
-                            <label class="flex flex-col p-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 cursor-pointer transition text-xs">
+                            <label class="flex flex-col p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition text-xs">
                                 <div class="flex items-center space-x-2 mb-1">
-                                    <input type="radio" name="target_mode" value="PERSONAL" onchange="handleTargetModeChange(this.value)" class="w-4 h-4 text-sky-500 bg-slate-900 border-slate-700">
-                                    <span class="font-bold text-white">Japri Personal Crew</span>
+                                    <input type="radio" name="target_mode" value="PERSONAL" onchange="handleTargetModeChange(this.value)" class="w-4 h-4 text-sky-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700">
+                                    <span class="font-bold text-zinc-900 dark:text-zinc-100">Japri Personal Crew</span>
                                 </div>
-                                <span class="text-[10px] text-slate-400 leading-tight">Kirim 1 per 1 dengan jeda delay anti-ban.</span>
+                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-tight">Kirim 1 per 1 dengan jeda delay anti-ban.</span>
                             </label>
 
-                            <label class="flex flex-col p-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 cursor-pointer transition text-xs">
+                            <label class="flex flex-col p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition text-xs">
                                 <div class="flex items-center space-x-2 mb-1">
-                                    <input type="radio" name="target_mode" value="BOTH" onchange="handleTargetModeChange(this.value)" class="w-4 h-4 text-purple-500 bg-slate-900 border-slate-700">
-                                    <span class="font-bold text-white">Group + Japri</span>
+                                    <input type="radio" name="target_mode" value="BOTH" onchange="handleTargetModeChange(this.value)" class="w-4 h-4 text-purple-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700">
+                                    <span class="font-bold text-zinc-900 dark:text-zinc-100">Group + Japri</span>
                                 </div>
-                                <span class="text-[10px] text-slate-400 leading-tight">Kirim ke grup Rig sekaligus japri ke crew.</span>
+                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-tight">Kirim ke grup Rig sekaligus japri ke crew.</span>
                             </label>
                         </div>
 
                         <!-- Info Group Status of Selected Rig -->
-                        <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+                        <div class="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-2">
-                                <i class="fa-brands fa-whatsapp text-emerald-400"></i>
-                                <span class="text-slate-400">Grup Unit Rig [<?= htmlspecialchars($selectedMeeting['rig_name']) ?>]:</span>
+                                <i class="fa-brands fa-whatsapp text-emerald-600 dark:text-emerald-400"></i>
+                                <span class="text-zinc-500 dark:text-zinc-400">Grup Unit Rig [<?= htmlspecialchars($selectedMeeting['rig_name']) ?>]:</span>
                                 <?php if (!empty($selectedMeeting['wa_group_id'])): ?>
-                                    <strong class="text-emerald-400 font-mono"><?= htmlspecialchars($selectedMeeting['wa_group_name'] ?: $selectedMeeting['wa_group_id']) ?></strong>
+                                    <strong class="text-emerald-600 dark:text-emerald-400 font-mono"><?= htmlspecialchars($selectedMeeting['wa_group_name'] ?: $selectedMeeting['wa_group_id']) ?></strong>
                                 <?php else: ?>
-                                    <span class="text-amber-400 italic">Belum disetting</span>
+                                    <span class="text-amber-500 italic">Belum disetting</span>
                                 <?php endif; ?>
                             </div>
                             <?php if (empty($selectedMeeting['wa_group_id'])): ?>
-                                <a href="<?= base_url('rig/edit/' . $selectedMeeting['rig_id']) ?>" class="text-[11px] text-sky-400 hover:underline font-semibold flex items-center space-x-1">
+                                <a href="<?= base_url('rig/edit/' . $selectedMeeting['rig_id']) ?>" class="text-[11px] text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center space-x-1">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                     <span>Atur ID Grup di Master Rig</span>
                                 </a>
@@ -176,27 +176,27 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Tipe Pesan Broadcast <span class="text-rose-400">*</span></label>
+                        <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2">Tipe Pesan Broadcast <span class="text-rose-500">*</span></label>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <label class="flex flex-col items-center p-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 cursor-pointer transition text-center text-xs">
-                                <input type="radio" name="reminder_type" value="UNDANGAN" checked onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 mb-1">
-                                <span class="font-bold text-white">Undangan</span>
-                                <span class="text-[10px] text-slate-400">Pemberitahuan awal</span>
+                            <label class="flex flex-col items-center p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition text-center text-xs">
+                                <input type="radio" name="reminder_type" value="UNDANGAN" checked onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 mb-1">
+                                <span class="font-bold text-zinc-900 dark:text-zinc-100">Undangan</span>
+                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400">Pemberitahuan awal</span>
                             </label>
-                            <label class="flex flex-col items-center p-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 cursor-pointer transition text-center text-xs">
-                                <input type="radio" name="reminder_type" value="H-1" onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 mb-1">
-                                <span class="font-bold text-white">H-1</span>
-                                <span class="text-[10px] text-slate-400">1 hari sebelum</span>
+                            <label class="flex flex-col items-center p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition text-center text-xs">
+                                <input type="radio" name="reminder_type" value="H-1" onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 mb-1">
+                                <span class="font-bold text-zinc-900 dark:text-zinc-100">H-1</span>
+                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400">1 hari sebelum</span>
                             </label>
-                            <label class="flex flex-col items-center p-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 cursor-pointer transition text-center text-xs">
-                                <input type="radio" name="reminder_type" value="H-1_JAM" onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 mb-1">
-                                <span class="font-bold text-white">1 Jam</span>
-                                <span class="text-[10px] text-slate-400">60 menit sebelum</span>
+                            <label class="flex flex-col items-center p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition text-center text-xs">
+                                <input type="radio" name="reminder_type" value="H-1_JAM" onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 mb-1">
+                                <span class="font-bold text-zinc-900 dark:text-zinc-100">1 Jam</span>
+                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400">60 menit sebelum</span>
                             </label>
-                            <label class="flex flex-col items-center p-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 cursor-pointer transition text-center text-xs">
-                                <input type="radio" name="reminder_type" value="H-15_MIN" onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 mb-1">
-                                <span class="font-bold text-white">15 Menit</span>
-                                <span class="text-[10px] text-slate-400">Panggilan darurat</span>
+                            <label class="flex flex-col items-center p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer transition text-center text-xs">
+                                <input type="radio" name="reminder_type" value="H-15_MIN" onchange="updateMessagePreview()" class="w-4 h-4 text-emerald-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 mb-1">
+                                <span class="font-bold text-zinc-900 dark:text-zinc-100">15 Menit</span>
+                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400">Panggilan darurat</span>
                             </label>
                         </div>
                     </div>
@@ -204,26 +204,26 @@
                     <!-- Crew selection for personal / tagging -->
                     <div id="crewSelectionBox">
                         <div class="flex items-center justify-between mb-2">
-                            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Daftar Personil Crew (<?= count($participants) ?> Terdaftar)</label>
+                            <label class="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Daftar Personil Crew (<?= count($participants) ?> Terdaftar)</label>
                             <div class="flex items-center space-x-2 text-xs">
-                                <button type="button" onclick="toggleAllCrews(true)" class="text-sky-400 hover:underline">Pilih Semua</button>
-                                <span class="text-slate-600">&bull;</span>
-                                <button type="button" onclick="toggleAllCrews(false)" class="text-slate-400 hover:underline">Batal</button>
+                                <button type="button" onclick="toggleAllCrews(true)" class="text-sky-600 dark:text-sky-400 hover:underline font-semibold">Pilih Semua</button>
+                                <span class="text-zinc-300 dark:text-zinc-700">&bull;</span>
+                                <button type="button" onclick="toggleAllCrews(false)" class="text-zinc-500 dark:text-zinc-400 hover:underline">Batal</button>
                             </div>
                         </div>
 
                         <?php if (empty($participants)): ?>
-                            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center text-xs text-slate-400">
-                                Belum ada personil crew yang ditambahkan pada meeting ini. <a href="<?= base_url('meeting/edit/' . $selectedMeeting['id']) ?>" class="text-sky-400 hover:underline">Tambah Personil &rarr;</a>
+                            <div class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                                Belum ada personil crew yang ditambahkan pada meeting ini. <a href="<?= base_url('meeting/edit/' . $selectedMeeting['id']) ?>" class="text-sky-600 dark:text-sky-400 hover:underline font-semibold">Tambah Personil &rarr;</a>
                             </div>
                         <?php else: ?>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1 scrollbar-thin border border-slate-800 rounded-xl bg-slate-950/40">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1 scrollbar-thin border border-zinc-200 dark:border-zinc-800 rounded-lg bg-zinc-50/50 dark:bg-zinc-950/40">
                                 <?php foreach ($participants as $p): ?>
-                                    <label class="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-slate-800 cursor-pointer transition text-xs">
-                                        <input type="checkbox" name="crew_ids[]" value="<?= $p['crew_id'] ?>" checked class="crew-checkbox w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 rounded focus:ring-emerald-500">
+                                    <label class="flex items-center space-x-2.5 p-2 rounded-md hover:bg-zinc-100/70 dark:hover:bg-zinc-900 cursor-pointer transition text-xs">
+                                        <input type="checkbox" name="crew_ids[]" value="<?= $p['crew_id'] ?>" checked class="crew-checkbox w-4 h-4 text-emerald-600 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 rounded focus:ring-emerald-500/20">
                                         <div class="truncate">
-                                            <span class="font-bold text-white block truncate"><?= htmlspecialchars($p['crew_name']) ?></span>
-                                            <span class="text-[10px] text-slate-400 font-mono block truncate">+<?= htmlspecialchars($p['phone']) ?> (<?= htmlspecialchars($p['position']) ?>)</span>
+                                            <span class="font-medium text-zinc-900 dark:text-zinc-100 block truncate"><?= htmlspecialchars($p['crew_name']) ?></span>
+                                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono block truncate">+<?= htmlspecialchars($p['phone']) ?> (<?= htmlspecialchars($p['position']) ?>)</span>
                                         </div>
                                     </label>
                                 <?php endforeach; ?>
@@ -231,22 +231,22 @@
                         <?php endif; ?>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex items-center space-x-2.5 text-xs text-slate-400">
-                            <i class="fa-solid fa-shield-heart text-emerald-400 text-lg"></i>
+                    <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center space-x-2.5 text-xs text-zinc-500 dark:text-zinc-400">
+                            <i class="fa-solid fa-shield-heart text-emerald-600 dark:text-emerald-400 text-lg"></i>
                             <div>
-                                <span class="text-emerald-400 font-semibold block">Proteksi Anti-Ban Aktif</span>
-                                <span class="text-[10px] text-slate-500">Jeda acak 15–35 detik &bull; Simulasi ketik &bull; Personalisasi nama personil</span>
+                                <span class="text-emerald-600 dark:text-emerald-400 font-semibold block">Proteksi Anti-Ban Aktif</span>
+                                <span class="text-[10px] text-zinc-400 dark:text-zinc-500">Jeda acak 15–35 detik &bull; Simulasi ketik &bull; Personalisasi nama</span>
                             </div>
                         </div>
-                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2">
+                        <button type="submit" class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-xs transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-paper-plane"></i>
                             <span>Kirim Broadcast Sekarang</span>
                         </button>
                     </div>
                 <?php else: ?>
-                    <div class="text-center py-12 text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">
-                        <i class="fa-regular fa-calendar-check text-3xl mb-2 text-slate-600 block"></i>
+                    <div class="text-center py-12 text-xs text-zinc-500 dark:text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
+                        <i class="fa-regular fa-calendar-check text-3xl mb-2 text-zinc-400 block"></i>
                         Silakan pilih jadwal meeting di atas untuk memulai broadcast undangan ke WhatsApp.
                     </div>
                 <?php endif; ?>
@@ -257,53 +257,53 @@
         <div class="lg:col-span-5 space-y-4 flex flex-col">
 
             <!-- Card 1: Preview Pesan WhatsApp (Dipangkas & Ringkas) -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-2.5">
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs">
+                <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2.5 mb-2.5">
                     <div class="flex items-center space-x-2">
-                        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
                             <i class="fa-brands fa-whatsapp"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-bold text-white block">Preview Pesan WhatsApp</span>
-                            <span class="text-[10px] text-slate-400" id="previewModeLabel">Format Pesan WhatsApp Group</span>
+                            <span class="text-xs font-semibold text-zinc-900 dark:text-zinc-100 block">Preview Pesan WhatsApp</span>
+                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400" id="previewModeLabel">Format Pesan WhatsApp Group</span>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">RINGKASAN</span>
-                        <button type="button" onclick="togglePreviewBody()" class="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded hover:bg-slate-800 transition" title="Ciutkan / Buka">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">RINGKASAN</span>
+                        <button type="button" onclick="togglePreviewBody()" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 text-xs px-1.5 py-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition" title="Ciutkan / Buka">
                             <i id="togglePreviewIcon" class="fa-solid fa-chevron-up text-xs"></i>
                         </button>
                     </div>
                 </div>
 
                 <div id="previewBodyContainer" class="space-y-2">
-                    <div class="bg-emerald-950/70 border border-emerald-800/50 rounded-xl rounded-tl-none p-3 text-[11px] text-emerald-100 shadow-inner whitespace-pre-wrap font-mono leading-relaxed max-h-40 overflow-y-auto scrollbar-thin" id="waMessagePreview">
+                    <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-xl rounded-tl-none p-3.5 text-[11px] text-emerald-900 dark:text-emerald-200 shadow-inner whitespace-pre-wrap font-mono leading-relaxed max-h-40 overflow-y-auto scrollbar-thin" id="waMessagePreview">
                         Pilih meeting untuk melihat format pesan WhatsApp.
                     </div>
-                    <div class="text-[10px] text-right text-slate-500 flex items-center justify-end space-x-1">
+                    <div class="text-[10px] text-right text-zinc-400 flex items-center justify-end space-x-1">
                         <span><?= date('H:i') ?> WIB</span>
-                        <i class="fa-solid fa-check-double text-sky-400 text-xs"></i>
+                        <i class="fa-solid fa-check-double text-sky-500 text-xs"></i>
                     </div>
                 </div>
             </div>
 
             <!-- Card 2: Status Antrian & Log Pengiriman Nomor (Live Queue & Delivery Tracker) -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex-1 flex flex-col space-y-3">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs flex-1 flex flex-col space-y-3">
+                <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2.5">
                     <div class="flex items-center space-x-2">
-                        <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs">
+                        <div class="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs">
                             <i class="fa-solid fa-list-check"></i>
                         </div>
                         <div>
-                            <h3 class="text-xs font-bold text-white">Status Antrian & Pengiriman</h3>
-                            <p class="text-[10px] text-slate-400">Pantau nomor yang sedang dikirim, antrian, dan sukses</p>
+                            <h3 class="text-xs font-semibold text-zinc-900 dark:text-zinc-100">Status Antrian & Pengiriman</h3>
+                            <p class="text-[10px] text-zinc-500 dark:text-zinc-400">Pantau nomor yang sedang dikirim, antrian, dan sukses</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-1.5">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1"></span> LIVE
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping mr-1"></span> LIVE
                         </span>
-                        <button type="button" onclick="pollQueueData(true)" class="p-1 text-slate-400 hover:text-white text-xs transition" title="Refresh Sekarang">
+                        <button type="button" onclick="pollQueueData(true)" class="p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 text-xs transition" title="Refresh Sekarang">
                             <i class="fa-solid fa-rotate"></i>
                         </button>
                     </div>
@@ -311,43 +311,43 @@
 
                 <!-- Live Summary Counters -->
                 <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
-                    <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-2">
-                        <span class="text-slate-400 block text-[9px]">Terkirim</span>
-                        <span class="font-bold text-emerald-400 text-sm font-mono" id="statSentCount">0</span>
+                    <div class="bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
+                        <span class="text-zinc-500 dark:text-zinc-400 block text-[9px]">Terkirim</span>
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400 text-sm font-mono" id="statSentCount">0</span>
                     </div>
-                    <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-2">
-                        <span class="text-slate-400 block text-[9px]">Sedang Diproses</span>
-                        <span class="font-bold text-amber-400 text-sm font-mono" id="statActiveCount">0</span>
+                    <div class="bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
+                        <span class="text-zinc-500 dark:text-zinc-400 block text-[9px]">Sedang Diproses</span>
+                        <span class="font-bold text-amber-600 dark:text-amber-400 text-sm font-mono" id="statActiveCount">0</span>
                     </div>
-                    <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-2">
-                        <span class="text-slate-400 block text-[9px]">Dalam Antrian</span>
-                        <span class="font-bold text-slate-300 text-sm font-mono" id="statWaitingCount">0</span>
+                    <div class="bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2">
+                        <span class="text-zinc-500 dark:text-zinc-400 block text-[9px]">Dalam Antrian</span>
+                        <span class="font-bold text-zinc-700 dark:text-zinc-300 text-sm font-mono" id="statWaitingCount">0</span>
                     </div>
                 </div>
 
                 <!-- Active Processing Banner (Highlight saat sedang mengetik / jeda) -->
-                <div id="activeBannerBox" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 text-xs text-amber-300 space-y-1">
+                <div id="activeBannerBox" class="hidden bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5 text-xs text-amber-700 dark:text-amber-300 space-y-1">
                     <div class="flex items-center justify-between font-bold text-[11px]">
                         <span class="flex items-center space-x-1.5">
-                            <i class="fa-solid fa-spinner fa-spin text-amber-400"></i>
+                            <i class="fa-solid fa-spinner fa-spin text-amber-500"></i>
                             <span id="activeBannerTitle">Sedang Mengirim Pesan...</span>
                         </span>
-                        <span class="font-mono text-[9px] bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-300" id="activeBannerBadge">Ketik 4s</span>
+                        <span class="font-mono text-[9px] bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-700 dark:text-amber-300" id="activeBannerBadge">Ketik 4s</span>
                     </div>
-                    <p class="text-[10px] text-amber-200/80 truncate" id="activeBannerDesc">Tujuan: Personil Rig</p>
+                    <p class="text-[10px] text-amber-600/90 dark:text-amber-200/80 truncate" id="activeBannerDesc">Tujuan: Personil Rig</p>
                 </div>
 
                 <!-- Detailed List of Numbers & Recipients -->
                 <div class="space-y-1.5 flex-1 max-h-72 overflow-y-auto pr-1 scrollbar-thin" id="queueItemsContainer">
-                    <div class="text-center py-8 text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">
-                        <i class="fa-solid fa-inbox text-2xl mb-1.5 text-slate-600 block"></i>
+                    <div class="text-center py-8 text-xs text-zinc-500 dark:text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg">
+                        <i class="fa-solid fa-inbox text-2xl mb-1.5 text-zinc-400 block"></i>
                         Memuat data antrian pengiriman...
                     </div>
                 </div>
 
-                <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
-                    <span id="queueLastUpdated"><i class="fa-solid fa-shield-halved text-emerald-400 mr-1"></i> Proteksi Anti-Ban 15–35s Aktif</span>
-                    <a href="<?= base_url('reminder/log' . (!empty($selectedMeeting) ? '?meeting_id=' . $selectedMeeting['id'] : '')) ?>" class="text-sky-400 hover:underline font-semibold flex items-center space-x-1">
+                <div class="pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
+                    <span id="queueLastUpdated"><i class="fa-solid fa-shield-halved text-emerald-600 dark:text-emerald-400 mr-1"></i> Proteksi Anti-Ban 15–35s Aktif</span>
+                    <a href="<?= base_url('reminder/log' . (!empty($selectedMeeting) ? '?meeting_id=' . $selectedMeeting['id'] : '')) ?>" class="text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center space-x-1">
                         <span>Log Lengkap Outbox</span>
                         <i class="fa-solid fa-arrow-right text-[9px]"></i>
                     </a>
@@ -395,30 +395,30 @@
                 const el = document.getElementById('gatewayLiveStatus');
                 if (data.connected) {
                     const queueInfo = data.antiBan && data.antiBan.queueLength > 0 
-                        ? ` &bull; <span class="text-amber-400 font-bold"><i class="fa-solid fa-hourglass-half"></i> Antrian: ${data.antiBan.queueLength}</span>` 
+                        ? ` &bull; <span class="text-amber-500 font-bold"><i class="fa-solid fa-hourglass-half"></i> Antrian: ${data.antiBan.queueLength}</span>` 
                         : '';
                     const delayInfo = data.antiBan ? ` &bull; Jeda Aman: ${data.antiBan.minDelaySec}–${data.antiBan.maxDelaySec}s` : '';
                     el.innerHTML = `
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-emerald-400 font-semibold">Status: Online ${data.senderNumber ? '(' + data.senderNumber + ')' : ''}${delayInfo}${queueInfo}</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Status: Online ${data.senderNumber ? '(' + data.senderNumber + ')' : ''}${delayInfo}${queueInfo}</span>
                     `;
                 } else if (data.qr) {
                     el.innerHTML = `
-                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span class="text-amber-400">Status: Menunggu Scan QR &bull; <a href="<?= base_url('reminder/gateway') ?>" class="underline font-semibold hover:text-white">Scan Sekarang</a></span>
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span class="text-amber-600 dark:text-amber-400">Status: Menunggu Scan QR &bull; <a href="<?= base_url('reminder/gateway') ?>" class="underline font-semibold hover:text-zinc-900 dark:hover:text-white">Scan Sekarang</a></span>
                     `;
                 } else {
                     el.innerHTML = `
-                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span class="text-amber-400">Status: Menginisialisasi... &bull; <a href="<?= base_url('reminder/gateway') ?>" class="underline font-semibold hover:text-white">Buka Gateway</a></span>
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span class="text-amber-600 dark:text-amber-400">Status: Menginisialisasi... &bull; <a href="<?= base_url('reminder/gateway') ?>" class="underline font-semibold hover:text-zinc-900 dark:hover:text-white">Buka Gateway</a></span>
                     `;
                 }
             })
             .catch(err => {
                 const el = document.getElementById('gatewayLiveStatus');
                 el.innerHTML = `
-                    <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-                    <span class="text-rose-400">Service Gateway Mandiri Offline &bull; <a href="<?= base_url('reminder/gateway') ?>" class="underline font-semibold hover:text-white">Panduan Service</a></span>
+                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    <span class="text-rose-600 dark:text-rose-400">Service Gateway Mandiri Offline &bull; <a href="<?= base_url('reminder/gateway') ?>" class="underline font-semibold hover:text-zinc-900 dark:hover:text-white">Panduan Service</a></span>
                 `;
             });
     }
@@ -574,13 +574,14 @@
             .then(data => {
                 renderQueueCard(data);
                 if (manual && typeof Swal !== 'undefined') {
+                    const isDark = document.documentElement.classList.contains('dark');
                     const Toast = Swal.mixin({
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
                         timer: 1500,
-                        background: '#1e293b',
-                        color: '#f8fafc'
+                        background: isDark ? '#18181b' : '#ffffff',
+                        color: isDark ? '#f4f4f5' : '#18181b'
                     });
                     Toast.fire({ icon: 'success', title: 'Data antrian disinkronkan' });
                 }
@@ -628,19 +629,19 @@
         // Item 1: Currently active / processing
         if (currentlyProcessing) {
             html += `
-                <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 shadow-sm transition">
+                <div class="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 shadow-xs transition">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2">
-                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                            <span class="font-bold text-amber-300 text-xs">${escapeHtml(currentlyProcessing.recipientName)}</span>
+                            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                            <span class="font-bold text-amber-700 dark:text-amber-300 text-xs">${escapeHtml(currentlyProcessing.recipientName)}</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
                             ${currentlyProcessing.status === 'waiting_delay' ? '⏳ JEDA AMAN' : '⌨️ MENGETIK'}
                         </span>
                     </div>
-                    <div class="mt-1 flex items-center justify-between text-[10px] text-slate-400">
-                        <span class="font-mono text-slate-300">+${escapeHtml(currentlyProcessing.number)}</span>
-                        <span class="text-amber-200/90 font-medium">${currentlyProcessing.statusText}</span>
+                    <div class="mt-1 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
+                        <span class="font-mono text-zinc-700 dark:text-zinc-300">+${escapeHtml(currentlyProcessing.number)}</span>
+                        <span class="text-amber-700 dark:text-amber-300 font-medium">${currentlyProcessing.statusText}</span>
                     </div>
                 </div>
             `;
@@ -650,19 +651,19 @@
         if (waitingItems.length > 0) {
             waitingItems.forEach(item => {
                 html += `
-                    <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition">
+                    <div class="p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-2">
-                                <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                                <span class="font-semibold text-white text-xs">${escapeHtml(item.recipientName)}</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                                <span class="font-semibold text-zinc-900 dark:text-zinc-100 text-xs">${escapeHtml(item.recipientName)}</span>
                             </div>
-                            <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-slate-800 text-slate-300 border border-slate-700">
+                            <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                                 ANTRIAN #${item.position}
                             </span>
                         </div>
-                        <div class="mt-1 flex items-center justify-between text-[10px] text-slate-400">
-                            <span class="font-mono text-slate-400">+${escapeHtml(item.number)}</span>
-                            <span class="text-slate-500">Est. Kirim: ~${item.estWaitSec || 25} detik</span>
+                        <div class="mt-1 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
+                            <span class="font-mono text-zinc-600 dark:text-zinc-400">+${escapeHtml(item.number)}</span>
+                            <span class="text-zinc-400">Est. Kirim: ~${item.estWaitSec || 25} detik</span>
                         </div>
                     </div>
                 `;
@@ -675,19 +676,19 @@
                 const isSent = item.status === 'sent';
                 const statusLabel = isSent ? 'TERKIRIM' : 'GAGAL';
                 html += `
-                    <div class="p-2.5 rounded-xl bg-slate-950/80 border border-emerald-900/40 hover:border-emerald-700/50 transition">
+                    <div class="p-2.5 rounded-lg bg-zinc-50/70 dark:bg-zinc-950/80 border border-emerald-500/20 hover:border-emerald-500/40 transition">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-2">
-                                <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
-                                <span class="font-semibold text-white text-xs">${escapeHtml(item.recipientName)}</span>
+                                <i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                                <span class="font-semibold text-zinc-900 dark:text-zinc-100 text-xs">${escapeHtml(item.recipientName)}</span>
                             </div>
-                            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                                 ✅ ${statusLabel}
                             </span>
                         </div>
-                        <div class="mt-1 flex items-center justify-between text-[10px] text-slate-400">
-                            <span class="font-mono text-slate-300">+${escapeHtml(item.number)}</span>
-                            <span class="text-slate-500 font-mono">Pukul ${item.time || '-'} WIB</span>
+                        <div class="mt-1 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
+                            <span class="font-mono text-zinc-700 dark:text-zinc-300">+${escapeHtml(item.number)}</span>
+                            <span class="text-zinc-400 font-mono">Pukul ${item.time || '-'} WIB</span>
                         </div>
                     </div>
                 `;
@@ -715,10 +716,10 @@
         if (!initialRecentLogs || initialRecentLogs.length === 0) {
             if (statSent) statSent.textContent = '0';
             container.innerHTML = `
-                <div class="text-center py-8 text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">
-                    <i class="fa-solid fa-inbox text-2xl mb-1.5 text-slate-600 block"></i>
+                <div class="text-center py-8 text-xs text-zinc-500 dark:text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg">
+                    <i class="fa-solid fa-inbox text-2xl mb-1.5 text-zinc-400 block"></i>
                     Belum ada antrian atau riwayat pengiriman.<br>
-                    <span class="text-[10px] text-slate-400 mt-1 inline-block">Klik <strong>"Kirim Broadcast Sekarang"</strong> untuk memulai.</span>
+                    <span class="text-[10px] text-zinc-400 mt-1 inline-block">Klik <strong>"Kirim Broadcast Sekarang"</strong> untuk memulai.</span>
                 </div>
             `;
             return;
@@ -733,19 +734,19 @@
             const pos = l.position ? `(${l.position})` : '';
             const jam = l.sent_at ? l.sent_at.substring(11, 19) : '';
             html += `
-                <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 hover:border-slate-700 transition">
+                <div class="p-2.5 rounded-lg bg-zinc-50/70 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2 truncate">
-                            <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
-                            <span class="font-semibold text-white text-xs truncate">${escapeHtml(name)} <span class="text-[10px] text-slate-400 font-normal">${escapeHtml(pos)}</span></span>
+                            <i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                            <span class="font-semibold text-zinc-900 dark:text-zinc-100 text-xs truncate">${escapeHtml(name)} <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal">${escapeHtml(pos)}</span></span>
                         </div>
-                        <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isSent ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isSent ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'}">
                             ${isSent ? '✅ TERKIRIM' : '❌ GAGAL'}
                         </span>
                     </div>
-                    <div class="mt-1 flex items-center justify-between text-[10px] text-slate-400">
-                        <span class="font-mono text-slate-300">+${escapeHtml(l.target_phone)}</span>
-                        <span class="text-slate-500 font-mono">${jam} WIB</span>
+                    <div class="mt-1 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
+                        <span class="font-mono text-zinc-700 dark:text-zinc-300">+${escapeHtml(l.target_phone)}</span>
+                        <span class="text-zinc-400 font-mono">${jam} WIB</span>
                     </div>
                 </div>
             `;

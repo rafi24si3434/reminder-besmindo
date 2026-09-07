@@ -13,7 +13,7 @@ class Rig extends MY_Controller
     {
         $rigs = $this->Rig_model->get_rig_with_crew_count();
         $data = array(
-            'title' => 'Master Data Rig - Besmindo Reminder',
+            'title' => 'Master Data Rig - Monitoring Pre Hitch Meeting',
             'rigs'  => $rigs
         );
         $this->render_template('rig/index', $data);
@@ -22,7 +22,7 @@ class Rig extends MY_Controller
     public function create()
     {
         $data = array(
-            'title' => 'Tambah Unit Rig Baru - Besmindo Reminder',
+            'title' => 'Tambah Unit Rig Baru - Monitoring Pre Hitch Meeting',
             'rig'   => null
         );
         $this->render_template('rig/form', $data);
@@ -37,7 +37,7 @@ class Rig extends MY_Controller
         }
 
         $data = array(
-            'title' => 'Ubah Data Rig - Besmindo Reminder',
+            'title' => 'Ubah Data Rig - Monitoring Pre Hitch Meeting',
             'rig'   => $rig
         );
         $this->render_template('rig/form', $data);

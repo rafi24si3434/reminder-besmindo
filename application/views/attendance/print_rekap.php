@@ -382,11 +382,7 @@
             </div>
             <div class="kpi-box" style="border-color: #86efac; background: #f0fdf4;">
                 <div class="num" style="color: #15803d;"><?= $stats['hadir'] ?></div>
-                <div class="lbl" style="color: #15803d;">Hadir Tepat Waktu</div>
-            </div>
-            <div class="kpi-box" style="border-color: #fcd34d; background: #fffbeb;">
-                <div class="num" style="color: #b45309;"><?= $stats['terlambat'] ?></div>
-                <div class="lbl" style="color: #b45309;">Terlambat</div>
+                <div class="lbl" style="color: #15803d;">Total Hadir</div>
             </div>
             <div class="kpi-box" style="border-color: #7dd3fc; background: #f0f9ff;">
                 <div class="num" style="color: #0369a1;"><?= $stats['izin'] ?></div>
@@ -444,8 +440,6 @@
                             <td style="text-align: center;">
                                 <?php if ($att['status'] === 'HADIR'): ?>
                                     <span class="badge badge-hadir">HADIR</span>
-                                <?php elseif ($att['status'] === 'TERLAMBAT'): ?>
-                                    <span class="badge badge-terlambat">TERLAMBAT</span>
                                 <?php elseif ($att['status'] === 'IZIN'): ?>
                                     <span class="badge badge-izin">IZIN</span>
                                 <?php elseif ($att['status'] === 'TIDAK_HADIR'): ?>

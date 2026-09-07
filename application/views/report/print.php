@@ -51,12 +51,16 @@
             <div class="text-lg font-bold text-slate-900"><?= $stats['total'] ?></div>
         </div>
         <div>
-            <span class="text-[10px] text-emerald-700 uppercase font-semibold">Hadir Tepat Waktu</span>
+            <span class="text-[10px] text-emerald-700 uppercase font-semibold">Total Hadir</span>
             <div class="text-lg font-bold text-emerald-700"><?= $stats['hadir'] ?></div>
         </div>
         <div>
-            <span class="text-[10px] text-amber-700 uppercase font-semibold">Terlambat</span>
-            <div class="text-lg font-bold text-amber-700"><?= $stats['terlambat'] ?></div>
+            <span class="text-[10px] text-blue-700 uppercase font-semibold">Izin / Sakit</span>
+            <div class="text-lg font-bold text-blue-700"><?= $stats['izin'] ?></div>
+        </div>
+        <div>
+            <span class="text-[10px] text-rose-700 uppercase font-semibold">Tidak Hadir (Alpha)</span>
+            <div class="text-lg font-bold text-rose-700"><?= $stats['tidak_hadir'] ?></div>
         </div>
         <div>
             <span class="text-[10px] text-sky-700 uppercase font-semibold">Persentase Kehadiran</span>
@@ -96,8 +100,6 @@
                     <td class="p-2 border-r border-slate-200 text-center font-bold">
                         <?php if ($r['status'] === 'HADIR'): ?>
                             <span class="text-emerald-700">HADIR</span>
-                        <?php elseif ($r['status'] === 'TERLAMBAT'): ?>
-                            <span class="text-amber-700">TERLAMBAT</span>
                         <?php elseif ($r['status'] === 'IZIN'): ?>
                             <span class="text-blue-700">IZIN</span>
                         <?php elseif ($r['status'] === 'TIDAK_HADIR'): ?>

@@ -224,7 +224,7 @@ class Api extends CI_Controller
 
                 // Jika crew belum tercatat hadir
                 if ($statusNow === 'BELUM_HADIR' || $statusNow === 'TIDAK_HADIR') {
-                    $newStatus = ($nowTime > $toleranceTime) ? 'TERLAMBAT' : 'HADIR';
+                    $newStatus = 'HADIR';
                     $this->Attendance_model->update($matchedAtt['id'], array(
                         'status'           => $newStatus,
                         'join_time'        => date('Y-m-d H:i:s'),
@@ -298,6 +298,216 @@ class Api extends CI_Controller
                 'stats'       => $stats,
                 'server_time' => date('H:i:s') . ' WIB'
             )));
+    }
+
+    /**
+     * Pusat notifikasi admin (real-time, tanpa tabel DB).
+     * Item dihitung dari state DB saat poll; status unread per-session disimpan di PHP session.
+     */
+    /**
+     * Pusat notifikasi: komputasi item real-time dari state DB saat ini.
+     * Dipakai bersama oleh `notifications()` (baca) dan `notifications_read()` (tandai semua)
+     * agar kunci unread konsisten.
+     */
+    private function _build_items()
+    {
+        $now = time();
+        $today = date('Y-m-d');
+        $items = array();
+
+        // --- Sumber 1: Meeting akan segera dimulai / sedang berlangsung ---
+        $meetings = $this->Meeting_model->get_meetings_detailed();
+        foreach ($meetings as $m) {
+            if (!in_array($m['status'], array('scheduled', 'in_progress'), TRUE)) continue;
+
+            $start = strtotime($m['meeting_date'] . ' ' . $m['start_time']);
+            $minuteDiff = round(($start - $now) / 60);
+
+            if ($m['status'] === 'in_progress' || ($minuteDiff >= -30 && $minuteDiff <= 15)) {
+                if ($minuteDiff > 1) {
+                    $type = 'meeting_soon';
+                    $icon = 'fa-regular fa-clock';
+                    $color = 'text-amber-500 bg-amber-500/10';
+                    $text = "Meeting <strong>{$m['title']}</strong> ({$m['rig_name']}) dimulai dalam <strong>{$minuteDiff} menit</strong>.";
+                    $agoTxt = 'mulai ' . date('H:i', $start) . ' WIB';
+                } else {
+                    $type = 'meeting_now';
+                    $icon = 'fa-solid fa-video';
+                    $color = 'text-emerald-500 bg-emerald-500/10';
+                    $text = "<strong>{$m['title']}</strong> ({$m['rig_name']}) sedang <strong>berlangsung</strong> sekarang.";
+                    $agoTxt = 'dibuka pukul ' . date('H:i', $start) . ' WIB';
+                }
+                $items[] = $this->_notif_item($type, $icon, $color, $text, 'meeting/detail/' . $m['id'], $start, $agoTxt, 'm' . $m['id']);
+            }
+        }
+
+        // --- Sumber 2: Crew masih BELUM_HADIR pada meeting berlangsung ---
+        if (!isset($this->Attendance_model)) $this->load->model('Attendance_model');
+        foreach ($meetings as $m) {
+            if ($m['status'] !== 'in_progress') continue;
+            $msStart = strtotime($m['meeting_date'] . ' ' . $m['start_time']);
+            $atts = $this->Attendance_model->get_meeting_attendances($m['id']);
+            $pending = 0;
+            foreach ($atts as $a) if ($a['status'] === 'BELUM_HADIR') $pending++;
+            if ($pending > 0) {
+                $items[] = $this->_notif_item(
+                    'not_present',
+                    'fa-solid fa-user-clock',
+                    'text-rose-500 bg-rose-500/10',
+                    "<strong>{$pending} crew</strong> masih <strong>belum hadir</strong> di {$m['title']} ({$m['rig_name']}).",
+                    'attendance/live/' . $m['id'],
+                    $msStart,
+                    $this->_ago($now, $msStart),
+                    'np' . $m['id']
+                );
+            }
+        }
+
+        // --- Sumber 3: Kehadiran crew baru (HADIR) dalam 10 menit terakhir ---
+        $recentWindow = date('Y-m-d H:i:s', $now - 600);
+        $this->db->select('attendances.status, attendances.updated_at, attendances.meeting_id, attendances.crew_id, crews.name as crew_name, meetings.title, rigs.name as rig_name');
+        $this->db->from('attendances');
+        $this->db->join('crews', 'crews.id = attendances.crew_id');
+        $this->db->join('meetings', 'meetings.id = attendances.meeting_id');
+        $this->db->join('rigs', 'rigs.id = meetings.rig_id', 'left');
+        $this->db->where('attendances.status !=', 'BELUM_HADIR');
+        $this->db->where('attendances.updated_at >=', $recentWindow);
+        $this->db->order_by('attendances.updated_at', 'DESC');
+        $this->db->limit(15);
+        $recentJoins = $this->db->get()->result_array();
+        foreach ($recentJoins as $rj) {
+            $items[] = $this->_notif_item(
+                'attendance',
+                'fa-solid fa-user-check',
+                'text-emerald-500 bg-emerald-500/10',
+                "<strong>{$rj['crew_name']}</strong> hadir di {$rj['title']} ({$rj['rig_name']}).",
+                'attendance/live/' . $rj['meeting_id'],
+                strtotime($rj['updated_at']),
+                $this->_ago($now, strtotime($rj['updated_at'])),
+                'a' . $rj['meeting_id'] . '_' . $rj['crew_id']
+            );
+        }
+
+        // --- Sumber 4: Log reminder/broadcast hari ini (real dispatch / outbox) ---
+        if (!isset($this->Reminder_model)) $this->load->model('Reminder_model');
+        $logs = $this->Reminder_model->get_logs(null, 20);
+        $typeLabel = array(
+            'UNDANGAN'             => 'undangan',
+            'H-1'                  => 'H-1',
+            'H-1_JAM'              => '1 jam',
+            'H-15_MIN'             => '15 menit',
+            'NOT_PRESENT_REMINDER' => 'belum hadir'
+        );
+        foreach ($logs as $log) {
+            if ($log['sent_at'] < $today . ' 00:00:00') continue; // hanya hari ini
+            $label = isset($typeLabel[$log['reminder_type']]) ? $typeLabel[$log['reminder_type']] : strtolower($log['reminder_type']);
+            if ($log['status'] === 'failed') {
+                $icon = 'fa-solid fa-circle-xmark'; $color = 'text-rose-500 bg-rose-500/10';
+                $text = "<strong>Gagal kirim</strong> reminder {$label} ke {$log['crew_name']} untuk {$log['meeting_title']}.";
+            } else {
+                $icon = 'fa-brands fa-whatsapp'; $color = 'text-emerald-500 bg-emerald-500/10';
+                $text = "Reminder <strong>{$label}</strong> dikirim ke <strong>{$log['crew_name']}</strong> untuk {$log['meeting_title']}.";
+            }
+            $items[] = $this->_notif_item(
+                'reminder',
+                $icon, $color, $text,
+                'reminder/log',
+                strtotime($log['sent_at']),
+                $this->_ago($now, strtotime($log['sent_at'])),
+                'r' . $log['id']
+            );
+        }
+
+        // --- Urutkan dari terbaru, kap maks 30 item ---
+        usort($items, function ($a, $b) { return strcmp($b['time_sort'], $a['time_sort']); });
+        return array_slice($items, 0, 30);
+    }
+
+    public function notifications()
+    {
+        $isLogged = (bool)$this->session->userdata('logged_in');
+
+        // Auth guard: tanpa login, jangan bocorkan data & jangan kunci unread di session.
+        if (!$isLogged) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(array('items' => array(), 'unread' => 0, 'error' => 'login_required')));
+        }
+
+        $items = $this->_build_items();
+
+        // --- Item baru (belum dilihat) pada sesi ini ---
+        $seen = $this->session->userdata('notif_seen');
+        if (!is_array($seen)) $seen = array();
+        $fresh = array();
+        foreach ($items as $it) {
+            if (!isset($seen[$it['key']])) $fresh[] = $it;
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'items'  => $items,
+                'unread' => count($fresh),
+                'now'    => date('d M Y H:i:s') . ' WIB'
+            )));
+    }
+
+    /**
+     * Tandai item notifikasi sebagai sudah dibaca pada sesi ini.
+     * Body JSON `keys`: array kunci; kosongkan / null = tandai SEMUA item yang kini tampil.
+     */
+    public function notifications_read()
+    {
+        $isLogged = (bool)$this->session->userdata('logged_in');
+        if (!$isLogged) {
+            return $this->output->set_content_type('application/json')->set_output(json_encode(array('success' => false)));
+        }
+        $seen = $this->session->userdata('notif_seen');
+        if (!is_array($seen)) $seen = array();
+
+        $raw = file_get_contents('php://input');
+        $body = json_decode($raw, true);
+        $keys = (isset($body['keys']) && is_array($body['keys'])) ? $body['keys'] : null;
+
+        if ($keys === null) {
+            // Tandai SEMUA item yang kini tampil: pakai builder yang sama → kunci pasti konsisten.
+            foreach ($this->_build_items() as $it) {
+                $seen[$it['key']] = true;
+            }
+        } else {
+            foreach ($keys as $k) { $seen[$k] = true; }
+        }
+        $this->session->set_userdata('notif_seen', $seen);
+
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('success' => true)));
+    }
+
+    private function _ago($now, $ts)
+    {
+        $diff = $now - $ts;
+        if ($diff < 0) $diff = 0;
+        if ($diff < 60) return $diff . ' dtk lalu';
+        if ($diff < 3600) return round($diff / 60) . ' mnt lalu';
+        if ($diff < 86400) return round($diff / 3600) . ' jam lalu';
+        return date('d M', $ts);
+    }
+
+    private function _notif_item($type, $icon, $color, $text, $link, $sortTs, $ago, $idKey)
+    {
+        // Kunci stabil per entitas (mis. a<meeting>_<crew>, m<meeting>, r<log>) agar status unread
+        // tidak berubah seiring teks waktu yang bergulir antar poll.
+        $key = $type . '_' . md5($type . '|' . $link . '|' . $idKey);
+        return array(
+            'type'      => $type,
+            'icon'      => $icon,
+            'color'     => $color,
+            'text'      => $text,
+            'link'      => base_url($link),
+            'time_text' => $ago,
+            'time_sort' => date('YmdHis', $sortTs),
+            'key'       => $key
+        );
     }
 }
 

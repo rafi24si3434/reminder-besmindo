@@ -8,9 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Offline Local with CDN Fallback) -->
+    <script src="assets/js/tailwindcss.js"></script>
+    <script>if (typeof tailwind === 'undefined') { document.write('<script src="https://cdn.tailwindcss.com"><\/script>'); }</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        img { max-width: 100%; height: auto; }
+    </style>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -52,8 +58,8 @@
                 <!-- Dark mode logo -->
                 <img src="assets/images/logo_besmindo.png" alt="PT Besmindo Materi Sewatama" class="h-12 w-auto object-contain hidden dark:block">
             </div>
-            <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">BESMINDO REMINDER</h1>
-            <p class="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Sistem Reminder &amp; Monitoring Kehadiran Meeting Crew Rig</p>
+            <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 uppercase">MONITORING PRE HITCH MEETING</h1>
+            <p class="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Sistem Reminder &amp; Monitoring Kehadiran Meeting Crew Rig - PT Besmindo</p>
         </div>
 
         <div class="p-6 space-y-6">

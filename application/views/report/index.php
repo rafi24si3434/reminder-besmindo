@@ -24,6 +24,22 @@
     <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs">
         <form method="GET" action="<?= base_url('report') ?>" class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <!-- Filter Tahun -->
+                <div class="flex items-center space-x-1.5">
+                    <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Tahun:</span>
+                    <select name="year" onchange="this.form.submit()" class="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg px-3 py-2 font-semibold focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none transition">
+                        <?php 
+                        $curYear = (int)date('Y');
+                        for ($y = $curYear - 2; $y <= $curYear + 1; $y++): 
+                        ?>
+                            <option value="<?= $y ?>" <?= ($selectedYear == $y) ? 'selected' : '' ?>>
+                                <?= $y ?>
+                            </option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+
+                <!-- Filter Rig -->
                 <div>
                     <select name="rig_id" onchange="this.form.submit()" class="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none transition">
                         <option value="">-- Semua Unit Rig --</option>
@@ -34,6 +50,21 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
+
+                <!-- Filter Karyawan -->
+                <div>
+                    <select name="crew_id" onchange="this.form.submit()" class="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none transition max-w-xs">
+                        <option value="">-- Semua Karyawan --</option>
+                        <?php if (!empty($crews)): ?>
+                            <?php foreach ($crews as $cr): ?>
+                                <option value="<?= $cr['id'] ?>" <?= ($selectedCrew == $cr['id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($cr['name']) ?> (Grup <?= $cr['group_code'] ?> - <?= htmlspecialchars($cr['position']) ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
                 <div class="flex items-center space-x-2 text-xs text-zinc-500 dark:text-zinc-400">
                     <span>Dari:</span>
                     <input type="date" name="start_date" value="<?= htmlspecialchars($startDate ?: '') ?>" onchange="this.form.submit()" class="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none transition">
@@ -42,7 +73,7 @@
                     <span>Sampai:</span>
                     <input type="date" name="end_date" value="<?= htmlspecialchars($endDate ?: '') ?>" onchange="this.form.submit()" class="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none transition">
                 </div>
-                <?php if ($selectedRig || $startDate || $endDate): ?>
+                <?php if ($selectedRig || $selectedCrew || $startDate || $endDate || ($selectedYear != date('Y'))): ?>
                     <a href="<?= base_url('report') ?>" class="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center space-x-1 font-medium transition">
                         <i class="fa-solid fa-rotate-left"></i>
                         <span>Reset Filter</span>
@@ -52,14 +83,183 @@
         </form>
     </div>
 
+    <!-- ========================================================================= -->
+    <!-- SECTION: GRAFIK & ANALITIK KEHADIRAN 1 TAHUN (RANGE TAHUNAN UNTUK KARYAWAN) -->
+    <!-- ========================================================================= -->
+    <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+                <h2 class="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-chart-column text-emerald-500"></i>
+                    <span>Grafik Kehadiran Tahunan (Tahun <?= $yearlyStats['year'] ?>)</span>
+                </h2>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                    <?php if ($selectedCrew): ?>
+                        Filter: 1 Karyawan Terpilih
+                    <?php elseif ($selectedRig): ?>
+                        Filter: Unit Rig Terpilih
+                    <?php else: ?>
+                        Menampilkan seluruh data personil crew (Semua Rig & Grup)
+                    <?php endif; ?>
+                </p>
+            </div>
+            <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <i class="fa-solid fa-calendar-check mr-1.5"></i>
+                <span>Tingkat Kehadiran: <strong><?= $yearlyStats['donut']['percentage'] ?>%</strong></span>
+            </div>
+        </div>
+
+        <!-- KPI Mini Cards 1 Tahun -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs">
+                <span class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">Total Pertemuan</span>
+                <span class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 block mt-1"><?= $yearlyStats['donut']['total'] ?></span>
+                <span class="text-[10px] text-zinc-400">Jadwal Meeting <?= $yearlyStats['year'] ?></span>
+            </div>
+            <div class="bg-white dark:bg-zinc-900 border border-emerald-500/30 rounded-xl p-4 shadow-xs">
+                <span class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Total Hadir</span>
+                <span class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 block mt-1"><?= $yearlyStats['donut']['hadir'] ?></span>
+                <span class="text-[10px] text-emerald-600/70">Presensi Berhasil</span>
+            </div>
+            <div class="bg-white dark:bg-zinc-900 border border-sky-500/30 rounded-xl p-4 shadow-xs">
+                <span class="text-[11px] font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider block">Izin / Sakit</span>
+                <span class="text-2xl font-bold tracking-tight text-sky-600 dark:text-sky-400 block mt-1"><?= $yearlyStats['donut']['izin'] ?></span>
+                <span class="text-[10px] text-sky-600/70">Dispensasi Resmi</span>
+            </div>
+            <div class="bg-white dark:bg-zinc-900 border border-rose-500/30 rounded-xl p-4 shadow-xs">
+                <span class="text-[11px] font-medium text-rose-600 dark:text-rose-400 uppercase tracking-wider block">Tidak Hadir (Alpha)</span>
+                <span class="text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400 block mt-1"><?= $yearlyStats['donut']['tidak_hadir'] ?></span>
+                <span class="text-[10px] text-rose-600/70">Mangkir Meeting</span>
+            </div>
+        </div>
+
+        <!-- Dua Grafik: Bar Chart (12 Bulan) & Donut Chart (Rasio 1 Tahun) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Grafik Batang 12 Bulan -->
+            <div class="lg:col-span-8 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-xs space-y-3">
+                <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                    <div>
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+                            <i class="fa-solid fa-chart-simple text-emerald-500"></i>
+                            <span>Grafik Batang Kehadiran Karyawan per Bulan (12 Bulan - <?= $yearlyStats['year'] ?>)</span>
+                        </h3>
+                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Tren jumlah personil Hadir, Izin, dan Tidak Hadir setiap bulannya</p>
+                    </div>
+                </div>
+                <div class="relative h-64 sm:h-72 w-full">
+                    <canvas id="yearlyBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Grafik Donut Rasio 1 Tahun -->
+            <div class="lg:col-span-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-xs flex flex-col justify-between space-y-3">
+                <div class="border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-pie text-sky-500"></i>
+                        <span>Rasio Kehadiran 1 Tahun</span>
+                    </h3>
+                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Persentase status akumulatif <?= $yearlyStats['year'] ?></p>
+                </div>
+                <div class="relative h-52 w-full flex items-center justify-center">
+                    <canvas id="yearlyDonutChart"></canvas>
+                </div>
+                <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-3 gap-2 text-center text-[10px]">
+                    <div class="p-1.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                        <span class="font-bold block"><?= $yearlyStats['donut']['hadir'] ?></span>
+                        <span>Hadir</span>
+                    </div>
+                    <div class="p-1.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                        <span class="font-bold block"><?= $yearlyStats['donut']['izin'] ?></span>
+                        <span>Izin</span>
+                    </div>
+                    <div class="p-1.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                        <span class="font-bold block"><?= $yearlyStats['donut']['tidak_hadir'] ?></span>
+                        <span>Alpha</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Rekap Per Karyawan (1 Tahun) -->
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+                        <i class="fa-solid fa-users text-indigo-500"></i>
+                        <span>Tabel Rekap Kehadiran Karyawan (Range 1 Tahun - <?= $yearlyStats['year'] ?>)</span>
+                    </h3>
+                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Performa absensi tiap personil crew dalam seluruh meeting tahun <?= $yearlyStats['year'] ?></p>
+                </div>
+            </div>
+            <div class="overflow-x-auto max-h-80">
+                <table class="w-full text-left text-xs text-zinc-700 dark:text-zinc-300">
+                    <thead class="bg-zinc-50 dark:bg-zinc-950/60 text-zinc-500 dark:text-zinc-400 uppercase font-semibold text-[10px] tracking-wider border-b border-zinc-200 dark:border-zinc-800 sticky top-0">
+                        <tr>
+                            <th class="px-3 py-2.5">No</th>
+                            <th class="px-3 py-2.5">Nama Personil</th>
+                            <th class="px-3 py-2.5">Jabatan</th>
+                            <th class="px-3 py-2.5">Rig & Grup</th>
+                            <th class="px-3 py-2.5 text-center">Total Meeting</th>
+                            <th class="px-3 py-2.5 text-center text-emerald-600 dark:text-emerald-400">Hadir</th>
+                            <th class="px-3 py-2.5 text-center text-sky-600 dark:text-sky-400">Izin</th>
+                            <th class="px-3 py-2.5 text-center text-rose-600 dark:text-rose-400">Alpha</th>
+                            <th class="px-3 py-2.5 text-center">Tingkat Kehadiran</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                        <?php if (empty($yearlyStats['crew_summary'])): ?>
+                            <tr>
+                                <td colspan="9" class="px-4 py-8 text-center text-zinc-500 dark:text-zinc-400">Tidak ada data karyawan.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php $cNo = 1; foreach ($yearlyStats['crew_summary'] as $cs): ?>
+                                <tr class="hover:bg-zinc-50/70 dark:hover:bg-zinc-800/40 transition">
+                                    <td class="px-3 py-2 font-mono text-zinc-400"><?= $cNo++ ?></td>
+                                    <td class="px-3 py-2">
+                                        <div class="font-semibold text-zinc-900 dark:text-zinc-100"><?= htmlspecialchars($cs['name']) ?></div>
+                                        <div class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"><?= htmlspecialchars($cs['nik'] ?: '-') ?></div>
+                                    </td>
+                                    <td class="px-3 py-2 text-zinc-600 dark:text-zinc-300"><?= htmlspecialchars($cs['position']) ?></td>
+                                    <td class="px-3 py-2">
+                                        <span class="font-medium text-zinc-900 dark:text-zinc-100"><?= htmlspecialchars($cs['rig_name'] ?: '-') ?></span>
+                                        <span class="inline-flex items-center ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                            Grup <?= $cs['group_code'] ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-2 text-center font-bold font-mono text-zinc-700 dark:text-zinc-300"><?= $cs['total_meetings'] ?></td>
+                                    <td class="px-3 py-2 text-center font-bold font-mono text-emerald-600 dark:text-emerald-400"><?= $cs['hadir'] ?></td>
+                                    <td class="px-3 py-2 text-center font-bold font-mono text-sky-600 dark:text-sky-400"><?= $cs['izin'] ?></td>
+                                    <td class="px-3 py-2 text-center font-bold font-mono text-rose-600 dark:text-rose-400"><?= $cs['tidak_hadir'] ?></td>
+                                    <td class="px-3 py-2 text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <div class="w-16 bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                                                <div class="bg-emerald-500 h-full rounded-full" style="width: <?= min(100, $cs['percentage']) ?>%"></div>
+                                            </div>
+                                            <span class="font-mono font-bold text-xs <?= ($cs['percentage'] >= 80) ? 'text-emerald-600 dark:text-emerald-400' : (($cs['percentage'] >= 50) ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400') ?>">
+                                                <?= $cs['percentage'] ?>%
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION: EVALUASI KEDISIPLINAN CREW & TINGKAT KEHADIRAN PER RIG          -->
+    <!-- ========================================================================= -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <div class="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
                 <div>
                     <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
-                        <span>Personil Crew Paling Sering Terlambat / Absen</span>
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                        <span>Personil Crew Paling Sering Absen (Alpha)</span>
                     </h3>
                     <p class="text-xs text-zinc-500 dark:text-zinc-400">Evaluasi kedisiplinan dan bahan tindak lanjut Manager Operasional</p>
                 </div>
@@ -70,9 +270,9 @@
                     <thead class="bg-zinc-50 dark:bg-zinc-950/60 text-zinc-500 dark:text-zinc-400 uppercase font-semibold text-[10px] tracking-wider border-b border-zinc-200 dark:border-zinc-800">
                         <tr>
                             <th class="px-3 py-2.5">Personil Crew</th>
-                            <th class="px-3 py-2.5">Rig</th>
-                            <th class="px-3 py-2.5 text-center text-rose-600 dark:text-rose-400">Tidak Hadir</th>
-                            <th class="px-3 py-2.5 text-center text-amber-600 dark:text-amber-400">Terlambat</th>
+                            <th class="px-3 py-2.5">Rig & Grup</th>
+                            <th class="px-3 py-2.5 text-center text-rose-600 dark:text-rose-400">Tidak Hadir (Alpha)</th>
+                            <th class="px-3 py-2.5 text-center text-sky-600 dark:text-sky-400">Izin</th>
                             <th class="px-3 py-2.5 text-center text-emerald-600 dark:text-emerald-400">Hadir</th>
                         </tr>
                     </thead>
@@ -94,8 +294,8 @@
                                     <td class="px-3 py-2.5 text-center font-bold text-rose-600 dark:text-rose-400 font-mono">
                                         <?= $mac['count_tidak_hadir'] ?>x
                                     </td>
-                                    <td class="px-3 py-2.5 text-center font-bold text-amber-600 dark:text-amber-400 font-mono">
-                                        <?= $mac['count_terlambat'] ?>x
+                                    <td class="px-3 py-2.5 text-center font-bold text-sky-600 dark:text-sky-400 font-mono">
+                                        <?= isset($mac['count_izin']) ? $mac['count_izin'] : 0 ?>x
                                     </td>
                                     <td class="px-3 py-2.5 text-center font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                                         <?= $mac['count_hadir'] ?>x
@@ -121,23 +321,23 @@
                 <?php foreach ($rigRecaps as $rr): ?>
                     <?php
                     $total = $rr['total_meeting_records'] ?: 1;
-                    $hadirPct = round(($rr['count_hadir'] / $total) * 100);
-                    $latePct = round(($rr['count_terlambat'] / $total) * 100);
+                    $hadirPct  = round(($rr['count_hadir'] / $total) * 100);
+                    $izinPct   = isset($rr['count_izin']) ? round(($rr['count_izin'] / $total) * 100) : 0;
                     $absentPct = round(($rr['count_tidak_hadir'] / $total) * 100);
                     ?>
                     <div class="p-3.5 bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-lg space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-semibold text-zinc-900 dark:text-zinc-100"><?= htmlspecialchars($rr['name']) ?></span>
-                            <span class="text-xs font-bold text-sky-600 dark:text-sky-400 font-mono"><?= $hadirPct ?>% Hadir</span>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono"><?= $hadirPct ?>% Hadir</span>
                         </div>
                         <div class="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full flex overflow-hidden">
                             <div class="bg-emerald-500 h-full" style="width: <?= $hadirPct ?>%"></div>
-                            <div class="bg-amber-500 h-full" style="width: <?= $latePct ?>%"></div>
+                            <div class="bg-sky-500 h-full" style="width: <?= $izinPct ?>%"></div>
                             <div class="bg-rose-500 h-full" style="width: <?= $absentPct ?>%"></div>
                         </div>
                         <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
                             <span class="text-emerald-600 dark:text-emerald-400 font-semibold"><?= $rr['count_hadir'] ?> Hadir</span>
-                            <span class="text-amber-600 dark:text-amber-400 font-semibold"><?= $rr['count_terlambat'] ?> Terlambat</span>
+                            <span class="text-sky-600 dark:text-sky-400 font-semibold"><?= isset($rr['count_izin']) ? $rr['count_izin'] : 0 ?> Izin</span>
                             <span class="text-rose-600 dark:text-rose-400 font-semibold"><?= $rr['count_tidak_hadir'] ?> Absen</span>
                         </div>
                     </div>
@@ -197,8 +397,6 @@
                                 <td class="px-4 py-3 text-center">
                                     <?php if ($rec['status'] === 'HADIR'): ?>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">HADIR</span>
-                                    <?php elseif ($rec['status'] === 'TERLAMBAT'): ?>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20">TERLAMBAT</span>
                                     <?php elseif ($rec['status'] === 'IZIN'): ?>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20">IZIN</span>
                                     <?php elseif ($rec['status'] === 'TIDAK_HADIR'): ?>
@@ -227,3 +425,136 @@
     </div>
 
 </div>
+
+<!-- Inisialisasi Chart.js untuk Grafik Kehadiran 1 Tahun -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#a1a1aa' : '#52525b';
+    const gridColor = isDark ? '#27272a' : '#f4f4f5';
+
+    // 1. Grafik Batang Bulanan (12 Bulan)
+    const barCtx = document.getElementById('yearlyBarChart');
+    if (barCtx) {
+        new Chart(barCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [
+                    {
+                        label: 'Hadir',
+                        data: <?= json_encode(array_column($yearlyStats['monthly'], 'hadir')) ?>,
+                        backgroundColor: '#10b981',
+                        borderRadius: 4,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    },
+                    {
+                        label: 'Izin',
+                        data: <?= json_encode(array_column($yearlyStats['monthly'], 'izin')) ?>,
+                        backgroundColor: '#0284c7',
+                        borderRadius: 4,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    },
+                    {
+                        label: 'Tidak Hadir (Alpha)',
+                        data: <?= json_encode(array_column($yearlyStats['monthly'], 'tidak_hadir')) ?>,
+                        backgroundColor: '#f43f5e',
+                        borderRadius: 4,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: textColor,
+                            boxWidth: 12,
+                            font: { size: 11, family: 'Inter' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? '#18181b' : '#ffffff',
+                        titleColor: isDark ? '#f4f4f5' : '#18181b',
+                        bodyColor: isDark ? '#d4d4d8' : '#3f3f46',
+                        borderColor: isDark ? '#27272a' : '#e4e4e7',
+                        borderWidth: 1,
+                        padding: 10
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: textColor, font: { size: 11, family: 'Inter' } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: { 
+                            color: textColor, 
+                            font: { size: 11, family: 'Inter' },
+                            stepSize: 1,
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Grafik Donut Rasio 1 Tahun
+    const donutCtx = document.getElementById('yearlyDonutChart');
+    if (donutCtx) {
+        const hadirVal = <?= (int)$yearlyStats['donut']['hadir'] ?>;
+        const izinVal  = <?= (int)$yearlyStats['donut']['izin'] ?>;
+        const alphaVal = <?= (int)$yearlyStats['donut']['tidak_hadir'] ?>;
+        const hasData  = (hadirVal + izinVal + alphaVal) > 0;
+
+        new Chart(donutCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: hasData ? ['Hadir', 'Izin', 'Tidak Hadir (Alpha)'] : ['Belum Ada Data'],
+                datasets: [{
+                    data: hasData ? [hadirVal, izinVal, alphaVal] : [1],
+                    backgroundColor: hasData ? ['#10b981', '#0284c7', '#f43f5e'] : [isDark ? '#27272a' : '#e4e4e7'],
+                    borderColor: isDark ? '#18181b' : '#ffffff',
+                    borderWidth: 2,
+                    cutout: '70%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: textColor,
+                            boxWidth: 10,
+                            font: { size: 10, family: 'Inter' }
+                        }
+                    },
+                    tooltip: {
+                        enabled: hasData,
+                        backgroundColor: isDark ? '#18181b' : '#ffffff',
+                        titleColor: isDark ? '#f4f4f5' : '#18181b',
+                        bodyColor: isDark ? '#d4d4d8' : '#3f3f46',
+                        borderColor: isDark ? '#27272a' : '#e4e4e7',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+    }
+});
+</script>

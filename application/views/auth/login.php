@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Portal Manager - PT Besmindo Materi Sewatama</title>
+    <title>Login - Monitoring Pre Hitch Meeting PT Besmindo</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Offline Local with CDN Fallback) -->
+    <script src="<?= base_url('assets/js/tailwindcss.js') ?>"></script>
+    <script>if (typeof tailwind === 'undefined') { document.write('<script src="https://cdn.tailwindcss.com"><\/script>'); }</script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -39,8 +41,10 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" type="image/png" href="<?= base_url('assets/images/logo_besmindo.png') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>">
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }
+        img { max-width: 100%; height: auto; }
     </style>
 </head>
 <body class="min-h-full flex items-center justify-center p-4 transition-colors
@@ -67,7 +71,7 @@
                 <img src="<?= base_url('assets/images/logo_besmindo_light.png') ?>" alt="PT Besmindo Materi Sewatama" class="h-16 w-auto mx-auto object-contain dark:hidden">
                 <img src="<?= base_url('assets/images/logo_besmindo.png') ?>" alt="PT Besmindo Materi Sewatama" class="h-12 w-auto mx-auto object-contain hidden dark:block">
             </div>
-            <h1 class="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">SISTEM REMINDER &amp; MONITORING RIG</h1>
+            <h1 class="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100 uppercase">MONITORING PRE HITCH MEETING</h1>
             <p class="text-xs font-medium text-sky-600 dark:text-sky-400 mt-0.5 uppercase tracking-wider">PT. Besmindo Materi Sewatama</p>
         </div>
 

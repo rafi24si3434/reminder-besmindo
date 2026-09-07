@@ -88,19 +88,23 @@
                     border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700">
                     <div class="space-y-2 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                                <i class="fa-solid fa-tower-observation mr-1 text-[10px]"></i> <?= htmlspecialchars($m['rig_name']) ?>
-                            </span>
-
-                            <?php if ($m['is_recurring']): ?>
-                                <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                                    <i class="fa-solid fa-repeat mr-1 text-[10px]"></i> Rutin Tiap <?= htmlspecialchars($m['recurring_day'] ?: 'Minggu') ?>
+                            <?php if (!empty($m['is_joint'])): ?>
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 flex items-center">
+                                    <i class="fa-solid fa-layer-group mr-1.5 text-[10px]"></i> JOINT: <?= htmlspecialchars($m['joint_summary'] ?: 'Rapat Gabungan Multi-Rig') ?>
                                 </span>
                             <?php else: ?>
-                                <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
-                                    Sekali Jalan
+                                <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                                    <i class="fa-solid fa-tower-observation mr-1 text-[10px]"></i> <?= htmlspecialchars($m['rig_name']) ?>
+                                </span>
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                    Grup <?= htmlspecialchars($m['group_target'] ?: 'A') ?>
                                 </span>
                             <?php endif; ?>
+
+                            <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                <i class="<?= (!empty($m['session_time']) && $m['session_time'] === 'MALAM') ? 'fa-solid fa-moon text-sky-400' : 'fa-solid fa-sun text-amber-500' ?> mr-1 text-[10px]"></i>
+                                <?= (!empty($m['session_time']) && $m['session_time'] === 'MALAM') ? 'Sesi Malam' : 'Sesi Siang' ?>
+                            </span>
 
                             <?php if ($m['status'] === 'in_progress'): ?>
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">

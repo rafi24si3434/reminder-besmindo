@@ -145,15 +145,9 @@
         </div>
 
         <div class="bg-white dark:bg-zinc-900 border border-emerald-500/30 rounded-xl p-4 shadow-xs text-center">
-            <span class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Hadir Tepat Waktu</span>
+            <span class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Total Hadir</span>
             <span class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 block mt-1"><?= $stats['hadir'] ?></span>
-            <span class="text-[10px] text-emerald-600/70 dark:text-emerald-400/80">On-Time</span>
-        </div>
-
-        <div class="bg-white dark:bg-zinc-900 border border-amber-500/30 rounded-xl p-4 shadow-xs text-center">
-            <span class="text-[11px] font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Terlambat</span>
-            <span class="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400 block mt-1"><?= $stats['terlambat'] ?></span>
-            <span class="text-[10px] text-amber-600/70 dark:text-amber-400/80">&gt;10 Menit</span>
+            <span class="text-[10px] text-emerald-600/70 dark:text-emerald-400/80">Personil</span>
         </div>
 
         <div class="bg-white dark:bg-zinc-900 border border-sky-500/30 rounded-xl p-4 shadow-xs text-center">
@@ -162,10 +156,16 @@
             <span class="text-[10px] text-sky-600/70 dark:text-sky-400/80">Dispensasi / Off</span>
         </div>
 
-        <div class="bg-white dark:bg-zinc-900 border border-rose-500/30 rounded-xl p-4 shadow-xs text-center col-span-2 sm:col-span-1">
+        <div class="bg-white dark:bg-zinc-900 border border-rose-500/30 rounded-xl p-4 shadow-xs text-center">
             <span class="text-[11px] font-medium text-rose-600 dark:text-rose-400 uppercase tracking-wider block">Tidak Hadir (Alpha)</span>
             <span class="text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400 block mt-1"><?= $stats['tidak_hadir'] ?></span>
             <span class="text-[10px] text-rose-600/70 dark:text-rose-400/80">Mangkir</span>
+        </div>
+
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs text-center col-span-2 sm:col-span-1">
+            <span class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">Belum Hadir</span>
+            <span class="text-2xl font-bold tracking-tight text-zinc-700 dark:text-zinc-300 block mt-1"><?= $stats['belum_hadir'] ?></span>
+            <span class="text-[10px] text-zinc-400 dark:text-zinc-500">Pending</span>
         </div>
     </div>
 
@@ -177,25 +177,22 @@
                 <span>Tingkat Kehadiran Crew Rig:</span>
             </span>
             <span class="font-bold text-base <?= ($stats['percentage'] >= 80) ? 'text-emerald-600 dark:text-emerald-400' : (($stats['percentage'] >= 50) ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400') ?>">
-                <?= $stats['percentage'] ?>% (<?= $stats['hadir'] + $stats['terlambat'] ?> dari <?= $stats['total'] ?> Hadir)
+                <?= $stats['percentage'] ?>% (<?= $stats['hadir'] ?> dari <?= $stats['total'] ?> Hadir)
             </span>
         </div>
         <div class="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2.5 overflow-hidden flex">
             <?php 
                 $pctHadir = ($stats['total'] > 0) ? ($stats['hadir'] / $stats['total']) * 100 : 0;
-                $pctTelat = ($stats['total'] > 0) ? ($stats['terlambat'] / $stats['total']) * 100 : 0;
                 $pctIzin  = ($stats['total'] > 0) ? ($stats['izin'] / $stats['total']) * 100 : 0;
                 $pctAlpha = ($stats['total'] > 0) ? ($stats['tidak_hadir'] / $stats['total']) * 100 : 0;
             ?>
             <div style="width: <?= $pctHadir ?>%" class="bg-emerald-500 h-full rounded-l" title="Hadir: <?= $stats['hadir'] ?>"></div>
-            <div style="width: <?= $pctTelat ?>%" class="bg-amber-500 h-full" title="Terlambat: <?= $stats['terlambat'] ?>"></div>
             <div style="width: <?= $pctIzin ?>%" class="bg-sky-500 h-full" title="Izin: <?= $stats['izin'] ?>"></div>
             <div style="width: <?= $pctAlpha ?>%" class="bg-rose-500 h-full rounded-r" title="Tidak Hadir: <?= $stats['tidak_hadir'] ?>"></div>
         </div>
         <div class="flex flex-wrap items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
             <div class="flex items-center space-x-4">
-                <span class="inline-flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> <span>Hadir On-time</span></span>
-                <span class="inline-flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> <span>Terlambat</span></span>
+                <span class="inline-flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> <span>Hadir</span></span>
                 <span class="inline-flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> <span>Izin</span></span>
                 <span class="inline-flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> <span>Tidak Hadir (Alpha)</span></span>
             </div>
@@ -248,7 +245,6 @@
             <div class="flex flex-wrap items-center gap-1.5 text-xs">
                 <button type="button" onclick="filterTable('all')" class="filter-btn px-3 py-1 rounded-md bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 font-semibold transition" data-filter="all">Semua</button>
                 <button type="button" onclick="filterTable('HADIR')" class="filter-btn px-3 py-1 rounded-md bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 font-medium border border-zinc-200 dark:border-zinc-700 transition" data-filter="HADIR">Hadir</button>
-                <button type="button" onclick="filterTable('TERLAMBAT')" class="filter-btn px-3 py-1 rounded-md bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 font-medium border border-zinc-200 dark:border-zinc-700 transition" data-filter="TERLAMBAT">Terlambat</button>
                 <button type="button" onclick="filterTable('IZIN')" class="filter-btn px-3 py-1 rounded-md bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 font-medium border border-zinc-200 dark:border-zinc-700 transition" data-filter="IZIN">Izin</button>
                 <button type="button" onclick="filterTable('TIDAK_HADIR')" class="filter-btn px-3 py-1 rounded-md bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 font-medium border border-zinc-200 dark:border-zinc-700 transition" data-filter="TIDAK_HADIR">Tidak Hadir</button>
             </div>
@@ -293,11 +289,7 @@
                                 <td class="px-4 py-3 text-center">
                                     <?php if ($att['status'] === 'HADIR'): ?>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                            <i class="fa-solid fa-circle-check mr-1"></i> HADIR (Tepat)
-                                        </span>
-                                    <?php elseif ($att['status'] === 'TERLAMBAT'): ?>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                            <i class="fa-solid fa-clock-rotate-left mr-1"></i> TERLAMBAT
+                                            <i class="fa-solid fa-circle-check mr-1"></i> HADIR
                                         </span>
                                     <?php elseif ($att['status'] === 'IZIN'): ?>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/20">
@@ -409,7 +401,7 @@
                     <p>📅 *Tanggal:* <?= date('d M Y', strtotime($meeting['meeting_date'])) ?></p>
                     <p>🔒 *Status Sesi:* RESMI DITUTUP (Completed)</p>
                     <p class="pt-1">📊 *Statistik Kehadiran:*</p>
-                    <p>✅ Hadir Tepat: <?= $stats['hadir'] ?> | ⚠️ Terlambat: <?= $stats['terlambat'] ?> | ❌ Alpha: <?= $stats['tidak_hadir'] ?></p>
+                    <p>✅ Hadir: <?= $stats['hadir'] ?> | ℹ️ Izin: <?= $stats['izin'] ?> | ❌ Alpha: <?= $stats['tidak_hadir'] ?></p>
                     <p>📈 *Tingkat Kehadiran: <?= $stats['percentage'] ?>%*</p>
                     <p class="text-zinc-400 dark:text-zinc-500 pt-1 italic">...daftar personil & notulensi lengkap disertakan...</p>
                 </div>
@@ -511,8 +503,7 @@
             <div>
                 <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-1">Status Kehadiran <span class="text-rose-500">*</span></label>
                 <select name="status" id="editStatus" required class="w-full px-3.5 py-2 bg-zinc-50/50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none transition">
-                    <option value="HADIR">HADIR (Tepat Waktu)</option>
-                    <option value="TERLAMBAT">TERLAMBAT</option>
+                    <option value="HADIR">HADIR</option>
                     <option value="IZIN">IZIN / SAKIT / DISPENSASI</option>
                     <option value="TIDAK_HADIR">TIDAK HADIR (Alpha)</option>
                     <option value="BELUM_HADIR">BELUM HADIR</option>

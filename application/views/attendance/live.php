@@ -23,6 +23,12 @@
                 <span>Tempel Peserta Teams</span>
             </button>
 
+            <!-- Tombol Import File Excel/CSV Teams -->
+            <a href="<?= base_url('attendance/simulator?meeting_id=' . $meeting['id']) ?>" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-xs shadow-xs transition">
+                <i class="fa-solid fa-file-excel text-emerald-500"></i>
+                <span>Import File Teams</span>
+            </a>
+
             <a href="<?= base_url('attendance/rekap/' . $meeting['id']) ?>" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 font-semibold text-xs shadow-xs transition">
                 <i class="fa-solid fa-file-signature text-xs text-sky-600 dark:text-sky-400"></i>
                 <span>Rekap Absensi</span>
@@ -106,15 +112,15 @@
         </div>
 
         <div class="bg-white dark:bg-zinc-900 border border-emerald-500/30 rounded-xl p-4 shadow-xs text-center">
-            <span class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Hadir Tepat Waktu</span>
+            <span class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Total Hadir</span>
             <span class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 block mt-1" id="statHadir"><?= $stats['hadir'] ?></span>
-            <span class="text-[10px] text-emerald-600/70 dark:text-emerald-400/80">On-Time</span>
+            <span class="text-[10px] text-emerald-600/70 dark:text-emerald-400/80">Personil</span>
         </div>
 
-        <div class="bg-white dark:bg-zinc-900 border border-amber-500/30 rounded-xl p-4 shadow-xs text-center">
-            <span class="text-[11px] font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Terlambat</span>
-            <span class="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400 block mt-1" id="statTerlambat"><?= $stats['terlambat'] ?></span>
-            <span class="text-[10px] text-amber-600/70 dark:text-amber-400/80">&gt;10 Menit</span>
+        <div class="bg-white dark:bg-zinc-900 border border-blue-500/30 rounded-xl p-4 shadow-xs text-center">
+            <span class="text-[11px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider block">Izin / Sakit</span>
+            <span class="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400 block mt-1" id="statIzin"><?= $stats['izin'] ?></span>
+            <span class="text-[10px] text-blue-600/70 dark:text-blue-400/80">Dispensasi</span>
         </div>
 
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs text-center">
@@ -179,25 +185,21 @@
                                 </td>
                                 <td class="px-4 py-3 text-center" id="statusBadge_<?= $att['id'] ?>">
                                     <?php if ($att['status'] === 'HADIR'): ?>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                            <i class="fa-solid fa-check mr-1"></i> HADIR (Tepat Waktu)
-                                        </span>
-                                    <?php elseif ($att['status'] === 'TERLAMBAT'): ?>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                            <i class="fa-solid fa-clock mr-1"></i> TERLAMBAT
-                                        </span>
+                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                             <i class="fa-solid fa-check mr-1"></i> HADIR
+                                         </span>
                                     <?php elseif ($att['status'] === 'IZIN'): ?>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                                            <i class="fa-solid fa-file-signature mr-1"></i> IZIN
-                                        </span>
+                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                             <i class="fa-solid fa-file-signature mr-1"></i> IZIN
+                                         </span>
                                     <?php elseif ($att['status'] === 'TIDAK_HADIR'): ?>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                                            <i class="fa-solid fa-xmark mr-1"></i> TIDAK HADIR
-                                        </span>
+                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                             <i class="fa-solid fa-xmark mr-1"></i> TIDAK HADIR
+                                         </span>
                                     <?php else: ?>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
-                                            <i class="fa-solid fa-hourglass-start mr-1"></i> BELUM HADIR
-                                        </span>
+                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                                             <i class="fa-solid fa-hourglass-start mr-1"></i> BELUM HADIR
+                                         </span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-4 py-3 font-mono text-zinc-600 dark:text-zinc-300" id="joinTime_<?= $att['id'] ?>">
@@ -211,13 +213,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="inline-flex items-center space-x-1.5">
-                                        <button type="button" onclick="triggerSimulateJoin(<?= $att['id'] ?>, 'on_time')" title="Simulasikan Masuk Tepat Waktu" 
+                                        <button type="button" onclick="triggerSimulateJoin(<?= $att['id'] ?>, 'on_time')" title="Simulasikan Masuk Hadir" 
                                             class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-md transition border border-emerald-500/20">
                                             <i class="fa-solid fa-user-check text-xs"></i>
-                                        </button>
-                                        <button type="button" onclick="triggerSimulateJoin(<?= $att['id'] ?>, 'late')" title="Simulasikan Masuk Terlambat" 
-                                            class="p-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-md transition border border-amber-500/20">
-                                            <i class="fa-solid fa-user-clock text-xs"></i>
                                         </button>
                                         <button type="button" onclick="openManualEdit(<?= $att['id'] ?>, '<?= htmlspecialchars($att['crew_name']) ?>', '<?= $att['status'] ?>', '<?= htmlspecialchars($att['notes'] ?: '') ?>')" title="Koreksi Kehadiran Manual" 
                                             class="p-1.5 text-zinc-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition">
@@ -266,8 +264,7 @@
             <div>
                 <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-1">Status Kehadiran <span class="text-rose-500">*</span></label>
                 <select name="status" id="editStatus" required class="w-full px-3.5 py-2 bg-zinc-50/50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none transition">
-                    <option value="HADIR">HADIR (Tepat Waktu)</option>
-                    <option value="TERLAMBAT">TERLAMBAT</option>
+                    <option value="HADIR">HADIR</option>
                     <option value="IZIN">IZIN / SAKIT / OFF SHIFT</option>
                     <option value="TIDAK_HADIR">TIDAK HADIR (Mangkir)</option>
                     <option value="BELUM_HADIR">BELUM HADIR</option>
@@ -564,7 +561,7 @@
                 const st = data.stats;
                 if (document.getElementById('statTotal')) document.getElementById('statTotal').innerText = st.total;
                 if (document.getElementById('statHadir')) document.getElementById('statHadir').innerText = st.hadir;
-                if (document.getElementById('statTerlambat')) document.getElementById('statTerlambat').innerText = st.terlambat;
+                if (document.getElementById('statIzin')) document.getElementById('statIzin').innerText = st.izin;
                 if (document.getElementById('statBelumHadir')) document.getElementById('statBelumHadir').innerText = st.belum_hadir;
                 if (document.getElementById('statPercentage')) document.getElementById('statPercentage').innerText = st.percentage + '%';
 
@@ -575,9 +572,7 @@
                         if (badgeCell) {
                             let badgeHtml = '';
                             if (att.status === 'HADIR') {
-                                badgeHtml = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><i class="fa-solid fa-check mr-1"></i> HADIR (Tepat Waktu)</span>';
-                            } else if (att.status === 'TERLAMBAT') {
-                                badgeHtml = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20"><i class="fa-solid fa-clock mr-1"></i> TERLAMBAT</span>';
+                                badgeHtml = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><i class="fa-solid fa-check mr-1"></i> HADIR</span>';
                             } else if (att.status === 'IZIN') {
                                 badgeHtml = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"><i class="fa-solid fa-file-signature mr-1"></i> IZIN</span>';
                             } else if (att.status === 'TIDAK_HADIR') {

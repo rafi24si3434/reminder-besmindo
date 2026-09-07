@@ -13,17 +13,19 @@ class Crew extends MY_Controller
     public function index()
     {
         $rig_id = $this->input->get('rig_id', TRUE);
+        $group_code = $this->input->get('group', TRUE);
         $active_only = $this->input->get('active', TRUE);
 
-        $crews = $this->Crew_model->get_crews_with_rig($rig_id, $active_only);
+        $crews = $this->Crew_model->get_crews_with_rig($rig_id, $group_code, $active_only);
         $rigs = $this->Rig_model->get_all();
 
         $data = array(
-            'title'        => 'Manajemen Crew Rig - Besmindo Reminder',
-            'crews'        => $crews,
-            'rigs'         => $rigs,
-            'selectedRig'  => $rig_id,
-            'activeFilter' => $active_only
+            'title'         => 'Manajemen Crew Rig - Monitoring Pre Hitch Meeting',
+            'crews'         => $crews,
+            'rigs'          => $rigs,
+            'selectedRig'   => $rig_id,
+            'selectedGroup' => $group_code,
+            'activeFilter'  => $active_only
         );
 
         $this->render_template('crew/index', $data);
@@ -33,7 +35,7 @@ class Crew extends MY_Controller
     {
         $rigs = $this->Rig_model->get_all();
         $data = array(
-            'title' => 'Tambah Crew Baru - Besmindo Reminder',
+            'title' => 'Tambah Crew Baru - Monitoring Pre Hitch Meeting',
             'rigs'  => $rigs,
             'crew'  => null
         );
@@ -50,7 +52,7 @@ class Crew extends MY_Controller
 
         $rigs = $this->Rig_model->get_all();
         $data = array(
-            'title' => 'Ubah Data Crew - Besmindo Reminder',
+            'title' => 'Ubah Data Crew - Monitoring Pre Hitch Meeting',
             'rigs'  => $rigs,
             'crew'  => $crew
         );
@@ -63,14 +65,22 @@ class Crew extends MY_Controller
         $nik = trim($this->input->post('nik', TRUE));
         $name = trim($this->input->post('name', TRUE));
         $position = trim($this->input->post('position', TRUE));
+        $group_code = strtoupper(trim($this->input->post('group_code', TRUE) ?: 'A'));
+        if (!in_array($group_code, array('A', 'B', 'C'))) {
+            $group_code = 'A';
+        }
         $rig_id = (int)$this->input->post('rig_id', TRUE);
         $phone = trim($this->input->post('phone', TRUE));
         $email = trim($this->input->post('email', TRUE));
-        $is_active = $this->input->post('is_active') ? 1 : 0;
+        $is_active = $this->input->post('is_active') !== null ? (int)$this->input->post('is_active') : 1;
 
-        if (empty($nik) || empty($name) || empty($position) || empty($rig_id) || empty($phone)) {
-            $this->session->set_flashdata('error', 'NIK, Nama, Jabatan, Rig, dan No. WhatsApp wajib diisi.');
-            redirect('crew/create');
+        if (empty($name) || empty($position) || empty($rig_id) || empty($phone)) {
+            $this->session->set_flashdata('error', 'Nama, Jabatan/Posisi, Unit Rig, dan No. WhatsApp wajib diisi.');
+            redirect($id ? 'crew/edit/' . $id : 'crew/create');
+        }
+
+        if (empty($nik)) {
+            $nik = 'CRW' . date('y') . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone);
@@ -79,13 +89,14 @@ class Crew extends MY_Controller
         }
 
         $data = array(
-            'nik'       => $nik,
-            'name'      => $name,
-            'position'  => $position,
-            'rig_id'    => $rig_id,
-            'phone'     => $phone,
-            'email'     => $email,
-            'is_active' => $is_active
+            'nik'        => $nik,
+            'name'       => $name,
+            'position'   => $position,
+            'group_code' => $group_code,
+            'rig_id'     => $rig_id,
+            'phone'      => $phone,
+            'email'      => $email,
+            'is_active'  => $is_active
         );
 
         if (!empty($id)) {

@@ -16,7 +16,7 @@ class Auth extends CI_Controller
         }
 
         $this->load->view('auth/login', array(
-            'title' => 'Login Manager - Besmindo Reminder'
+            'title' => 'Login Manager - Monitoring Pre Hitch Meeting'
         ));
     }
 

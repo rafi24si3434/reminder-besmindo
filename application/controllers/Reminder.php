@@ -39,7 +39,7 @@ class Reminder extends MY_Controller
         $sender_number = $this->Setting_model->get_val('wa_sender_number', '');
 
         $data = array(
-            'title'           => 'Undangan & Broadcast WhatsApp - Besmindo Reminder',
+            'title'           => 'Undangan & Broadcast WhatsApp - Monitoring Pre Hitch Meeting',
             'meetings'        => $meetings,
             'selectedMeeting' => $selected_meeting,
             'participants'    => $participants,
@@ -180,7 +180,7 @@ class Reminder extends MY_Controller
         $api_url       = $this->Setting_model->get_val('wa_api_url', 'http://localhost:3000/send-message');
 
         $data = array(
-            'title'        => 'Pusat Layanan WhatsApp Gateway Mandiri (085148410891)',
+            'title'        => 'Pusat Layanan WhatsApp Gateway Mandiri - Monitoring Pre Hitch Meeting',
             'senderNumber' => $sender_number,
             'apiUrl'       => $api_url
         );
@@ -228,7 +228,7 @@ class Reminder extends MY_Controller
         $meetings = $this->Meeting_model->get_meetings_detailed();
 
         $data = array(
-            'title'             => 'Log Outbox WhatsApp Reminder - Besmindo Reminder',
+            'title'             => 'Log Outbox WhatsApp Reminder - Monitoring Pre Hitch Meeting',
             'logs'              => $logs,
             'meetings'          => $meetings,
             'selectedMeetingId' => $meeting_id

@@ -26,6 +26,36 @@
             <i id="themeIconMoon" class="fa-solid fa-moon text-sm text-sky-400 hidden"></i>
         </button>
 
+        <!-- Notification Bell -->
+        <div class="relative" id="notifWrap">
+            <button type="button" id="notifBell" onclick="toggleNotifications()" title="Notifikasi"
+                class="relative p-2 rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 transition"
+                aria-haspopup="true" aria-expanded="false" aria-label="Notifikasi">
+                <i class="fa-regular fa-bell text-sm"></i>
+                <span id="notifBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-semibold leading-[18px] text-center text-white bg-sky-500 shadow-sm"></span>
+            </button>
+
+            <!-- Dropdown Panel -->
+            <div id="notifPanel" class="hidden absolute right-0 mt-2 w-[min(92vw,380px)] origin-top-right rounded-xl border shadow-2xl ring-1 ring-black/5
+                bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 z-50
+                opacity-0 translate-y-1 pointer-events-none transition-all duration-200 ease-out
+                dark:shadow-black/40">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-bell text-xs text-zinc-400"></i>
+                        <span class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Notifikasi</span>
+                        <span id="notifLiveDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Real-time"></span>
+                    </div>
+                    <button type="button" onclick="markAllRead()" id="notifMarkAll"
+                        class="text-xs font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 hover:underline disabled:opacity-40 disabled:pointer-events-none">Tandai dibaca</button>
+                </div>
+                <div id="notifList" class="max-h-[360px] overflow-y-auto divide-y divide-zinc-100 dark:divide-zinc-800"></div>
+                <div id="notifFooter" class="px-4 py-2.5 border-t border-zinc-200 dark:border-zinc-800 text-center text-[11px] text-zinc-400 dark:text-zinc-500">
+                    <span id="notifUpdated"></span>
+                </div>
+            </div>
+        </div>
+
         <button type="button" onclick="triggerBackgroundReminders()" title="Periksa Jadwal &amp; Trigger Reminder Otomatis Sekarang" 
             class="hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition
                 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700

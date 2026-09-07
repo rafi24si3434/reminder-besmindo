@@ -82,7 +82,7 @@
             bg-white dark:bg-zinc-900
             border-zinc-200 dark:border-zinc-800">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Terlambat / Pending</span>
+                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Belum Hadir</span>
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center
                     bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900">
                     <i class="fa-solid fa-user-clock text-sm"></i>
@@ -90,11 +90,11 @@
             </div>
             <div class="mt-3">
                 <div class="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
-                    <?= $attendance_stats['terlambat'] ?> <span class="text-xs font-normal text-zinc-500 dark:text-zinc-400">Late / <?= $attendance_stats['belum_hadir'] ?> Pending</span>
+                    <?= $attendance_stats['belum_hadir'] ?> <span class="text-xs font-normal text-zinc-500 dark:text-zinc-400">Personil Pending</span>
                 </div>
                 <p class="text-xs text-amber-600/80 dark:text-amber-400/80 mt-1 flex items-center space-x-1">
-                    <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
-                    <span>Follow-up WhatsApp</span>
+                    <i class="fa-solid fa-hourglass-half text-[10px]"></i>
+                    <span>Menunggu bergabung</span>
                 </p>
             </div>
         </div>
@@ -302,18 +302,16 @@
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Hadir Tepat Waktu', 'Terlambat', 'Belum Hadir', 'Tidak Hadir', 'Izin'],
+                labels: ['Hadir', 'Belum Hadir', 'Tidak Hadir', 'Izin'],
                 datasets: [{
                     data: [
                         <?= $attendance_stats['hadir'] ?>,
-                        <?= $attendance_stats['terlambat'] ?>,
                         <?= $attendance_stats['belum_hadir'] ?>,
                         <?= $attendance_stats['tidak_hadir'] ?>,
                         <?= $attendance_stats['izin'] ?>
                     ],
                     backgroundColor: [
                         '#10b981',
-                        '#f59e0b',
                         '#71717a',
                         '#f43f5e',
                         '#0284c7'

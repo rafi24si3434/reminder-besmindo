@@ -24,17 +24,22 @@
     background: #475569;
 }
 
+/* Safety Rules against Unstyled FOUC / Huge Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+.logo-besmindo {
+    max-height: 48px;
+    width: auto;
+    object-fit: contain;
+}
+
 /* Status Badges */
 .badge-hadir {
     background-color: rgba(16, 185, 129, 0.15);
     color: #34d399;
     border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.badge-terlambat {
-    background-color: rgba(245, 158, 11, 0.15);
-    color: #fbbf24;
-    border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .badge-belum-hadir {

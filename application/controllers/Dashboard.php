@@ -27,7 +27,7 @@ class Dashboard extends MY_Controller
         $recent_reminders = $this->Reminder_model->get_logs(null, 5);
 
         $data = array(
-            'title'             => 'Dashboard Manager - Besmindo Reminder',
+            'title'             => 'Dashboard Manager - Monitoring Pre Hitch Meeting',
             'today_meetings'    => $today_meetings,
             'upcoming_meetings' => $upcoming_meetings,
             'total_crews'       => $total_crews,

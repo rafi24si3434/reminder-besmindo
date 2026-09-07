@@ -49,7 +49,7 @@ function nav_item($active) {
             <a href="<?= base_url('meeting') ?>"
                 class="<?= nav_item($current_segment === 'meeting') ?>">
                 <i class="fa-regular fa-calendar-check w-4 text-center text-sm <?= $current_segment === 'meeting' ? 'text-sky-400' : 'text-zinc-400' ?>"></i>
-                <span>Jadwal Meeting Rig</span>
+                <span>Jadwal Pre-Hitch Meeting</span>
             </a>
             <a href="<?= base_url('crew') ?>"
                 class="<?= nav_item($current_segment === 'crew') ?>">
@@ -107,8 +107,8 @@ function nav_item($active) {
             </a>
             <a href="<?= base_url('attendance/simulator') ?>"
                 class="<?= nav_item($current_segment === 'attendance' && $sub_segment === 'simulator') ?>">
-                <i class="fa-solid fa-gamepad w-4 text-center text-sm text-amber-400"></i>
-                <span>Teams Simulator &amp; CSV</span>
+                <i class="fa-solid fa-file-excel w-4 text-center text-sm text-emerald-400"></i>
+                <span>Import Teams (.xlsx / .csv)</span>
             </a>
         </div>
 

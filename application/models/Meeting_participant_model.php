@@ -35,4 +35,10 @@ class Meeting_participant_model extends CI_Model
             $this->db->insert_batch($this->table, $data);
         }
     }
+
+    public function get_participant_ids($meeting_id)
+    {
+        $rows = $this->db->select('crew_id')->where('meeting_id', $meeting_id)->get($this->table)->result_array();
+        return array_column($rows, 'crew_id');
+    }
 }

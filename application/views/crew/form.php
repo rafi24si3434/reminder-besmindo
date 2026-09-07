@@ -26,16 +26,6 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">NIK / ID Pegawai <span class="text-rose-500">*</span></label>
-                    <input type="text" name="nik" value="<?= isset($crew['nik']) ? htmlspecialchars($crew['nik']) : '' ?>" required 
-                        placeholder="Contoh: BSM-0108"
-                        class="w-full px-3 py-2 rounded-lg border text-sm transition
-                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
-                            text-zinc-900 dark:text-zinc-100 placeholder-zinc-400
-                            focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
-                </div>
-
-                <div>
                     <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Nama Lengkap Crew <span class="text-rose-500">*</span></label>
                     <input type="text" name="name" value="<?= isset($crew['name']) ? htmlspecialchars($crew['name']) : '' ?>" required 
                         placeholder="Contoh: Muhammad Ilham"
@@ -46,28 +36,13 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Jabatan / Peran di Rig <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Jabatan / Posisi di Rig <span class="text-rose-500">*</span></label>
                     <input type="text" name="position" value="<?= isset($crew['position']) ? htmlspecialchars($crew['position']) : '' ?>" required 
                         placeholder="Contoh: Driller / Floorman / Derrickman / HSE"
                         class="w-full px-3 py-2 rounded-lg border text-sm transition
                             bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
                             text-zinc-900 dark:text-zinc-100 placeholder-zinc-400
                             focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Penempatan Unit Rig <span class="text-rose-500">*</span></label>
-                    <select name="rig_id" required
-                        class="w-full px-3 py-2 rounded-lg border text-sm transition
-                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
-                            text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
-                        <option value="">-- Pilih Unit Rig --</option>
-                        <?php foreach ($rigs as $r): ?>
-                            <option value="<?= $r['id'] ?>" <?= (isset($crew['rig_id']) && $crew['rig_id'] == $r['id']) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($r['name']) ?> (<?= htmlspecialchars($r['code']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                 </div>
 
                 <div>
@@ -86,9 +61,38 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Alamat Email (Opsional)</label>
-                    <input type="email" name="email" value="<?= isset($crew['email']) ? htmlspecialchars($crew['email']) : '' ?>" 
-                        placeholder="Contoh: crew@besmindo.co.id"
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Penempatan Unit Rig <span class="text-rose-500">*</span></label>
+                    <select name="rig_id" required
+                        class="w-full px-3 py-2 rounded-lg border text-sm transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
+                        <option value="">-- Pilih Unit Rig --</option>
+                        <?php foreach ($rigs as $r): ?>
+                            <option value="<?= $r['id'] ?>" <?= (isset($crew['rig_id']) && $crew['rig_id'] == $r['id']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($r['name']) ?> (<?= htmlspecialchars($r['code']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Grup / Shift Kerja <span class="text-rose-500">*</span></label>
+                    <select name="group_code" required
+                        class="w-full px-3 py-2 rounded-lg border text-sm font-semibold transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
+                        <?php $currGrp = isset($crew['group_code']) ? $crew['group_code'] : 'A'; ?>
+                        <option value="A" <?= ($currGrp === 'A') ? 'selected' : '' ?>>Grup A (Shift A)</option>
+                        <option value="B" <?= ($currGrp === 'B') ? 'selected' : '' ?>>Grup B (Shift B)</option>
+                        <option value="C" <?= ($currGrp === 'C') ? 'selected' : '' ?>>Grup C (Shift C)</option>
+                    </select>
+                    <p class="text-[11px] text-zinc-500 mt-1">Pembagian ~120 personil rig ke dalam Grup A, B, atau C</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">NIK / ID Pegawai (Opsional)</label>
+                    <input type="text" name="nik" value="<?= isset($crew['nik']) ? htmlspecialchars($crew['nik']) : '' ?>" 
+                        placeholder="Kosongkan untuk auto-generate ID"
                         class="w-full px-3 py-2 rounded-lg border text-sm transition
                             bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
                             text-zinc-900 dark:text-zinc-100 placeholder-zinc-400

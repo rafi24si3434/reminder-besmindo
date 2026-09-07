@@ -46,7 +46,7 @@ class Attendance extends MY_Controller
         $stats = $this->Attendance_model->get_attendance_stats($meeting_id);
 
         $data = array(
-            'title'       => 'Live Attendance Microsoft Teams: ' . $meeting['title'],
+            'title'       => 'Live Attendance: ' . $meeting['title'] . ' - Monitoring Pre Hitch Meeting',
             'meetings'    => $meetings,
             'meeting'     => $meeting,
             'attendances' => $attendances,
@@ -73,7 +73,7 @@ class Attendance extends MY_Controller
         }
 
         $data = array(
-            'title'       => 'Microsoft Teams Attendance Simulator & CSV Import',
+            'title'       => 'Import Teams (.xlsx / .csv) & Analisis Kehadiran - Monitoring Pre Hitch Meeting',
             'meetings'    => $meetings,
             'meeting'     => $meeting,
             'attendances' => $attendances
@@ -98,15 +98,9 @@ class Attendance extends MY_Controller
         $meeting_date = $meeting['meeting_date'];
         $start_time = $meeting['start_time'];
 
-        if ($join_type === 'late') {
-            $join_time = date('Y-m-d H:i:s', strtotime("{$meeting_date} {$start_time} +20 minutes"));
-            $status = 'TERLAMBAT';
-            $duration = 40;
-        } else {
-            $join_time = date('Y-m-d H:i:s', strtotime("{$meeting_date} {$start_time} -2 minutes"));
-            $status = 'HADIR';
-            $duration = 60;
-        }
+        $join_time = date('Y-m-d H:i:s', strtotime("{$meeting_date} {$start_time} -2 minutes"));
+        $status = 'HADIR';
+        $duration = 60;
 
         $this->Attendance_model->update($attendance_id, array(
             'status'           => $status,
@@ -121,7 +115,7 @@ class Attendance extends MY_Controller
                 'success'   => true,
                 'status'    => $status,
                 'join_time' => $join_time,
-                'message'   => "Status kehadiran berhasil diupdate: {$status}"
+                'message'   => "Status kehadiran berhasil diupdate: HADIR"
             )));
     }
 
@@ -131,7 +125,7 @@ class Attendance extends MY_Controller
         $status = $this->input->post('status', TRUE);
         $notes = trim($this->input->post('notes', TRUE));
 
-        $valid = array('HADIR', 'TERLAMBAT', 'BELUM_HADIR', 'TIDAK_HADIR', 'IZIN');
+        $valid = array('HADIR', 'BELUM_HADIR', 'TIDAK_HADIR', 'IZIN');
         if (!in_array($status, $valid)) {
             $this->session->set_flashdata('error', 'Status tidak valid.');
             redirect($_SERVER['HTTP_REFERER']);
@@ -225,7 +219,7 @@ class Attendance extends MY_Controller
 
                     $crew = $this->db->like('name', $name)->get('crews')->row_array();
                     if ($crew) {
-                        $status = (isset($data[1]) && strtotime($data[1]) > strtotime($meeting['meeting_date'] . ' ' . $meeting['start_time'] . ' +10 minutes')) ? 'TERLAMBAT' : 'HADIR';
+                        $status = 'HADIR';
                         
                         $exist = $this->db->get_where('attendances', array('meeting_id' => $meeting_id, 'crew_id' => $crew['id']))->row_array();
                         if ($exist) {
@@ -233,7 +227,7 @@ class Attendance extends MY_Controller
                                 'status'           => $status,
                                 'join_time'        => date('Y-m-d H:i:s'),
                                 'duration_minutes' => 50,
-                                'source'           => 'TEAMS_SYNC'
+                                'source'           => 'TEAMS_FILE'
                             ));
                         } else {
                             $this->Attendance_model->insert(array(
@@ -242,7 +236,7 @@ class Attendance extends MY_Controller
                                 'status'           => $status,
                                 'join_time'        => date('Y-m-d H:i:s'),
                                 'duration_minutes' => 50,
-                                'source'           => 'TEAMS_SYNC'
+                                'source'           => 'TEAMS_FILE'
                             ));
                         }
                         $imported_count++;
@@ -254,6 +248,312 @@ class Attendance extends MY_Controller
 
         $this->session->set_flashdata('success', "Berhasil mengimpor & mensinkronisasi data kehadiran {$imported_count} crew dari file Microsoft Teams!");
         redirect('attendance/live/' . $meeting_id);
+    }
+
+    public function analyze_teams_file()
+    {
+        $meeting_id = (int)$this->input->post('meeting_id', TRUE);
+        if (!$meeting_id) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Pilih jadwal meeting terlebih dahulu.')));
+        }
+
+        if (empty($_FILES['teams_file']['tmp_name']) || !is_uploaded_file($_FILES['teams_file']['tmp_name'])) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Silakan unggah file Microsoft Teams (.xlsx atau .csv).')));
+        }
+
+        $meeting = $this->Meeting_model->get_meeting_detail($meeting_id);
+        if (!$meeting) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Data meeting tidak ditemukan.')));
+        }
+
+        $this->Attendance_model->init_meeting_attendances($meeting_id);
+        $participants = $this->Attendance_model->get_meeting_attendances($meeting_id);
+
+        $this->load->library('SimpleXLSX');
+        $filePath = $_FILES['teams_file']['tmp_name'];
+        $originalName = $_FILES['teams_file']['name'];
+
+        $parsedRows = SimpleXLSX::parse($filePath);
+        if ($parsedRows === false || empty($parsedRows)) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Gagal membaca isi file. Pastikan format file Excel (.xlsx) atau CSV Teams valid.')));
+        }
+
+        $headerRowIndex = -1;
+        $colName = -1;
+        $colJoin = -1;
+        $colDuration = -1;
+
+        for ($i = 0; $i < min(15, count($parsedRows)); $i++) {
+            $row = $parsedRows[$i];
+            foreach ($row as $colIdx => $val) {
+                $v = strtolower(trim((string)$val));
+                if (in_array($v, array('name', 'full name', 'nama', 'participant', 'peserta', 'display name', 'attendee name', 'name (original name)'))) {
+                    $headerRowIndex = $i;
+                    $colName = $colIdx;
+                } elseif (in_array($v, array('join time', 'first join', 'waktu gabung', 'joined', 'join_time', 'time joined'))) {
+                    $colJoin = $colIdx;
+                } elseif (in_array($v, array('duration', 'total duration', 'durasi', 'in-meeting duration', 'time in meeting'))) {
+                    $colDuration = $colIdx;
+                }
+            }
+            if ($colName !== -1) break;
+        }
+
+        if ($colName === -1) {
+            $headerRowIndex = 0;
+            $colName = 0;
+            $colJoin = (isset($parsedRows[0][1])) ? 1 : -1;
+            $colDuration = (isset($parsedRows[0][2])) ? 2 : -1;
+        }
+
+        $extractedAttendees = array();
+        $startRow = $headerRowIndex + 1;
+
+        for ($r = $startRow; $r < count($parsedRows); $r++) {
+            $row = $parsedRows[$r];
+            if (!isset($row[$colName])) continue;
+            $rawName = trim((string)$row[$colName]);
+            if (empty($rawName) || strpos($rawName, '---') !== false) continue;
+            if (preg_match('/^(summary|meeting title|start time|end time|total participants)/i', $rawName)) continue;
+
+            $joinTimeVal = ($colJoin !== -1 && isset($row[$colJoin])) ? trim((string)$row[$colJoin]) : '';
+            $durationVal = ($colDuration !== -1 && isset($row[$colDuration])) ? trim((string)$row[$colDuration]) : '';
+
+            $durMinutes = 0;
+            if (!empty($durationVal)) {
+                if (preg_match('/(\d+)\s*h/i', $durationVal, $mH)) {
+                    $durMinutes += ((int)$mH[1]) * 60;
+                }
+                if (preg_match('/(\d+)\s*m/i', $durationVal, $mM)) {
+                    $durMinutes += (int)$mM[1];
+                }
+                if ($durMinutes === 0 && is_numeric($durationVal)) {
+                    $num = (int)$durationVal;
+                    $durMinutes = ($num > 300) ? round($num / 60) : $num;
+                }
+            }
+            if ($durMinutes === 0) $durMinutes = 45;
+
+            $extractedAttendees[] = array(
+                'raw_name'         => $rawName,
+                'clean_name'       => strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $rawName)),
+                'join_time'        => $joinTimeVal,
+                'duration_minutes' => $durMinutes,
+                'matched'          => false
+            );
+        }
+
+        $crewIndex = array();
+        foreach ($participants as $p) {
+            $clean = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $p['crew_name']));
+            $tokens = array_filter(explode(' ', strtolower(trim(preg_replace('/[^a-zA-Z0-9 ]/', ' ', $p['crew_name'])))));
+            $crewIndex[$p['crew_id']] = array(
+                'participant' => $p,
+                'clean_name'  => $clean,
+                'tokens'      => $tokens,
+                'matched'     => false
+            );
+        }
+
+        $matchedList = array();
+        $unrecognizedList = array();
+
+        foreach ($extractedAttendees as &$att) {
+            $bestMatchCrewId = null;
+            $matchMethod = null;
+            $highestPct = 0;
+
+            // 1. Exact Match
+            foreach ($crewIndex as $cid => $cData) {
+                if ($cData['matched']) continue;
+                if ($att['clean_name'] === $cData['clean_name']) {
+                    $bestMatchCrewId = $cid;
+                    $matchMethod = 'Exact Match';
+                    break;
+                }
+            }
+
+            // 2. Substring Match
+            if (!$bestMatchCrewId) {
+                foreach ($crewIndex as $cid => $cData) {
+                    if ($cData['matched']) continue;
+                    if (!empty($cData['clean_name']) && !empty($att['clean_name'])) {
+                        if (strpos($cData['clean_name'], $att['clean_name']) !== false || strpos($att['clean_name'], $cData['clean_name']) !== false) {
+                            $bestMatchCrewId = $cid;
+                            $matchMethod = 'Substring Match';
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // 3. Token Match
+            if (!$bestMatchCrewId) {
+                $attTokens = array_filter(explode(' ', strtolower(trim(preg_replace('/[^a-zA-Z0-9 ]/', ' ', $att['raw_name'])))));
+                foreach ($crewIndex as $cid => $cData) {
+                    if ($cData['matched']) continue;
+                    $common = array_intersect($attTokens, $cData['tokens']);
+                    if (count($common) >= 2 || (count($cData['tokens']) === 1 && count($common) === 1 && strlen(reset($common)) >= 4)) {
+                        $bestMatchCrewId = $cid;
+                        $matchMethod = 'Token Match';
+                        break;
+                    }
+                }
+            }
+
+            // 4. Fuzzy Match (similar_text >= 75%)
+            if (!$bestMatchCrewId) {
+                foreach ($crewIndex as $cid => $cData) {
+                    if ($cData['matched']) continue;
+                    similar_text($att['clean_name'], $cData['clean_name'], $pct);
+                    if ($pct >= 75 && $pct > $highestPct) {
+                        $highestPct = $pct;
+                        $bestMatchCrewId = $cid;
+                        $matchMethod = 'Fuzzy Match (' . round($pct) . '%)';
+                    }
+                }
+            }
+
+            if ($bestMatchCrewId) {
+                $att['matched'] = true;
+                $crewIndex[$bestMatchCrewId]['matched'] = true;
+
+                $matchedList[] = array(
+                    'attendance_id'    => $crewIndex[$bestMatchCrewId]['participant']['id'],
+                    'crew_id'          => $bestMatchCrewId,
+                    'crew_name'        => $crewIndex[$bestMatchCrewId]['participant']['crew_name'],
+                    'nik'              => $crewIndex[$bestMatchCrewId]['participant']['nik'],
+                    'position'         => $crewIndex[$bestMatchCrewId]['participant']['position'],
+                    'group_code'       => $crewIndex[$bestMatchCrewId]['participant']['group_code'],
+                    'phone'            => $crewIndex[$bestMatchCrewId]['participant']['phone'],
+                    'file_name'        => $att['raw_name'],
+                    'method'           => $matchMethod,
+                    'duration_minutes' => $att['duration_minutes'],
+                    'join_time'        => $att['join_time'] ?: date('H:i:s')
+                );
+            } else {
+                $unrecognizedList[] = array(
+                    'raw_name'         => $att['raw_name'],
+                    'join_time'        => $att['join_time'] ?: '-',
+                    'duration_minutes' => $att['duration_minutes']
+                );
+            }
+        }
+
+        $unmatchedCrewList = array();
+        foreach ($crewIndex as $cid => $cData) {
+            if (!$cData['matched']) {
+                $unmatchedCrewList[] = array(
+                    'attendance_id' => $cData['participant']['id'],
+                    'crew_id'       => $cid,
+                    'crew_name'     => $cData['participant']['crew_name'],
+                    'nik'           => $cData['participant']['nik'],
+                    'position'      => $cData['participant']['position'],
+                    'group_code'    => $cData['participant']['group_code'],
+                    'phone'         => $cData['participant']['phone'],
+                    'current_status'=> $cData['participant']['status']
+                );
+            }
+        }
+
+        $totalExpected = count($participants);
+        $totalFound = count($matchedList);
+        $totalUnmatched = count($unmatchedCrewList);
+        $attendanceRate = $totalExpected > 0 ? round(($totalFound / $totalExpected) * 100, 1) : 0;
+
+        return $this->output->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'success'            => true,
+                'fileName'           => $originalName,
+                'meeting'            => array(
+                    'id'           => $meeting['id'],
+                    'title'        => $meeting['title'],
+                    'rig_name'     => $meeting['rig_name'],
+                    'meeting_date' => date('d M Y', strtotime($meeting['meeting_date'])),
+                    'start_time'   => substr($meeting['start_time'], 0, 5) . ' WIB',
+                    'is_joint'     => $meeting['is_joint'],
+                    'joint_summary'=> $meeting['joint_summary']
+                ),
+                'summary'            => array(
+                    'total_expected'  => $totalExpected,
+                    'total_found'     => $totalFound,
+                    'total_unmatched' => $totalUnmatched,
+                    'total_external'  => count($unrecognizedList),
+                    'percentage'      => $attendanceRate
+                ),
+                'matched'            => $matchedList,
+                'unmatched'          => $unmatchedCrewList,
+                'unrecognized'       => $unrecognizedList
+            )));
+    }
+
+    public function apply_teams_attendance()
+    {
+        $meeting_id = (int)$this->input->post('meeting_id', TRUE);
+        $matched_json = $this->input->post('matched_data');
+        $unmatched_action = $this->input->post('unmatched_action', TRUE);
+
+        if (!$meeting_id || empty($matched_json)) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Data hasil analisis tidak lengkap.')));
+        }
+
+        $matchedList = json_decode($matched_json, true);
+        if (!is_array($matchedList)) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(array('success' => false, 'message' => 'Format data tidak valid.')));
+        }
+
+        $meeting = $this->Meeting_model->get_by_id($meeting_id);
+        $appliedCount = 0;
+
+        foreach ($matchedList as $item) {
+            $attId = isset($item['attendance_id']) ? (int)$item['attendance_id'] : 0;
+            if (!$attId) continue;
+
+            $joinTime = date('Y-m-d H:i:s');
+            if (!empty($item['join_time']) && strpos($item['join_time'], ':') !== false) {
+                $timePart = (strlen($item['join_time']) === 5) ? $item['join_time'] . ':00' : $item['join_time'];
+                $joinTime = $meeting['meeting_date'] . ' ' . $timePart;
+            }
+
+            $dur = !empty($item['duration_minutes']) ? (int)$item['duration_minutes'] : 45;
+            $fileName = isset($item['file_name']) ? $item['file_name'] : $item['crew_name'];
+            $method = isset($item['method']) ? $item['method'] : 'Teams File';
+
+            $this->Attendance_model->update($attId, array(
+                'status'           => 'HADIR',
+                'join_time'        => $joinTime,
+                'duration_minutes' => $dur,
+                'source'           => 'TEAMS_FILE',
+                'notes'            => "Cocok dengan '{$fileName}' ({$method})"
+            ));
+            $appliedCount++;
+        }
+
+        $alphaCount = 0;
+        if ($unmatched_action === 'mark_alpha') {
+            $this->db->where('meeting_id', $meeting_id);
+            $this->db->where('status', 'BELUM_HADIR');
+            $this->db->update('attendances', array(
+                'status' => 'TIDAK_HADIR',
+                'notes'  => 'Tidak ditemukan pada file Microsoft Teams',
+                'source' => 'TEAMS_FILE'
+            ));
+            $alphaCount = $this->db->affected_rows();
+        }
+
+        return $this->output->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'success'     => true,
+                'applied'     => $appliedCount,
+                'alpha_count' => $alphaCount,
+                'message'     => "Berhasil menerapkan presensi: {$appliedCount} personil ditandai HADIR!" . ($alphaCount > 0 ? " ({$alphaCount} crew ditandai Alpha)" : "")
+            )));
     }
 
     public function close_session()
@@ -348,7 +648,7 @@ class Attendance extends MY_Controller
         $meetings    = $this->Meeting_model->get_meetings_detailed();
 
         $data = array(
-            'title'       => 'Rekap Absensi & Hasil Rapat: ' . $meeting['title'],
+            'title'       => 'Rekap Kehadiran: ' . $meeting['title'] . ' - Monitoring Pre Hitch Meeting',
             'meeting'     => $meeting,
             'attendances' => $attendances,
             'stats'       => $stats,
@@ -431,8 +731,6 @@ class Attendance extends MY_Controller
         foreach ($attendances as $att) {
             if ($att['status'] === 'HADIR') {
                 $hadirList[] = "• {$att['crew_name']} ({$att['position']})";
-            } elseif ($att['status'] === 'TERLAMBAT') {
-                $hadirList[] = "• {$att['crew_name']} ({$att['position']}) [Terlambat]";
             } elseif ($att['status'] === 'IZIN') {
                 $absenList[] = "• {$att['crew_name']} ({$att['position']}) [Izin]";
             } else {
@@ -463,8 +761,7 @@ class Attendance extends MY_Controller
             . "👤 *PJ Rig:* {$pj}\n"
             . "🔒 *Status Sesi:* RESMI DITUTUP (Completed)\n\n"
             . "📊 *Statistik Kehadiran Crew:*\n"
-            . "✅ Hadir Tepat Waktu: *{$stats['hadir']}* personil\n"
-            . "⚠️ Terlambat: *{$stats['terlambat']}* personil\n"
+            . "✅ Total Hadir: *{$stats['hadir']}* personil\n"
             . "ℹ️ Izin: *{$stats['izin']}* personil\n"
             . "❌ Tidak Hadir (Alpha): *{$stats['tidak_hadir']}* personil\n"
             . "📈 *Tingkat Kehadiran: {$stats['percentage']}%* (Total {$stats['total']} Personil)\n"

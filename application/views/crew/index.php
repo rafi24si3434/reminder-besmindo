@@ -47,6 +47,17 @@
                     </select>
                 </div>
                 <div>
+                    <select name="group" onchange="this.form.submit()"
+                        class="text-xs rounded-lg px-3 py-1.5 border font-medium transition
+                            bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
+                            text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500">
+                        <option value="">-- Semua Grup --</option>
+                        <option value="A" <?= (isset($selectedGroup) && $selectedGroup === 'A') ? 'selected' : '' ?>>Grup A</option>
+                        <option value="B" <?= (isset($selectedGroup) && $selectedGroup === 'B') ? 'selected' : '' ?>>Grup B</option>
+                        <option value="C" <?= (isset($selectedGroup) && $selectedGroup === 'C') ? 'selected' : '' ?>>Grup C</option>
+                    </select>
+                </div>
+                <div>
                     <select name="active" onchange="this.form.submit()"
                         class="text-xs rounded-lg px-3 py-1.5 border transition
                             bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800
@@ -56,7 +67,7 @@
                         <option value="0" <?= ($activeFilter === '0') ? 'selected' : '' ?>>Non-Aktif</option>
                     </select>
                 </div>
-                <?php if ($selectedRig || ($activeFilter !== null && $activeFilter !== '')): ?>
+                <?php if ($selectedRig || !empty($selectedGroup) || ($activeFilter !== null && $activeFilter !== '')): ?>
                     <a href="<?= base_url('crew') ?>" class="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center space-x-1">
                         <i class="fa-solid fa-rotate-left text-[10px]"></i>
                         <span>Reset Filter</span>
@@ -76,9 +87,9 @@
                     bg-zinc-50 dark:bg-zinc-950/80 text-zinc-500 dark:text-zinc-400
                     border-zinc-200 dark:border-zinc-800">
                     <tr>
-                        <th class="px-5 py-3">NIK &amp; Nama Crew</th>
+                        <th class="px-5 py-3">Nama &amp; ID Crew</th>
                         <th class="px-5 py-3">Jabatan / Posisi</th>
-                        <th class="px-5 py-3">Penempatan Rig</th>
+                        <th class="px-5 py-3">Unit Rig &amp; Grup</th>
                         <th class="px-5 py-3">Kontak WhatsApp</th>
                         <th class="px-5 py-3 text-center">Status</th>
                         <th class="px-5 py-3 text-right">Aksi</th>
@@ -110,10 +121,16 @@
                                     <?= htmlspecialchars($c['position']) ?>
                                 </td>
                                 <td class="px-5 py-3">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium
-                                        bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                                        <?= htmlspecialchars($c['rig_name'] ?: '-') ?>
-                                    </span>
+                                    <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium
+                                            bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                                            <?= htmlspecialchars($c['rig_name'] ?: '-') ?>
+                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold
+                                            bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                            Grup <?= htmlspecialchars($c['group_code'] ?: 'A') ?>
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="px-5 py-3">
                                     <div class="flex items-center space-x-2">

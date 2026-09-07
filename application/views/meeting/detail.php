@@ -182,11 +182,7 @@
                                 <td class="px-4 py-3 text-center">
                                     <?php if ($att['status'] === 'HADIR'): ?>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                            <i class="fa-solid fa-check mr-1"></i> HADIR (Tepat Waktu)
-                                        </span>
-                                    <?php elseif ($att['status'] === 'TERLAMBAT'): ?>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                            <i class="fa-solid fa-clock mr-1"></i> TERLAMBAT
+                                            <i class="fa-solid fa-check mr-1"></i> HADIR
                                         </span>
                                     <?php elseif ($att['status'] === 'IZIN'): ?>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20">
